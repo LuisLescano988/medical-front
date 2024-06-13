@@ -16,11 +16,11 @@ function App() {
   return (
     <Suspense fallback={<div>Loading...</div>}>
       <AnimatePresence mode='wait'>
-        <div className='flex flex-row'>
-          <div className='w-1/4 lg:w-3/12'>
+        <div className='flex flex-row w-screen'>
+          <div className='w-1/4 lg:w-3/12 max-sm:fixed'>
             <NavBar />
           </div>
-          <div className='w-3/4 lg:w-7/12 max-sm:w-11/12'>
+          <div className='w-7/12 max-sm:ml-[19%]'>
             <Routes location={location} key={location.pathname}>
               <Route path="/" element={<PageWrapper><Home /></PageWrapper>} />
               <Route path="/patients" element={<PageWrapper><Patients /></PageWrapper>} />
