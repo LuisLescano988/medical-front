@@ -17,10 +17,10 @@ function App() {
     <Suspense fallback={<div>Loading...</div>}>
       <AnimatePresence mode='wait'>
         <div className='flex flex-row w-screen'>
-          <div className='w-1/4 lg:w-3/12 max-sm:fixed'>
+          <div className='w-1/4 fixed'>
             <NavBar />
           </div>
-          <div className='w-7/12 max-sm:ml-[19%]'>
+          <div className=' w-screen'>
             <Routes location={location} key={location.pathname}>
               <Route path="/" element={<PageWrapper><Home /></PageWrapper>} />
               <Route path="/patients" element={<PageWrapper><Patients /></PageWrapper>} />
@@ -41,7 +41,7 @@ const PageWrapper = ({ children }) => (
     animate={{ opacity: 1 }}
     exit={{ opacity: 0.1 }}
     transition={{ duration: 0.2 }}
-    className=""
+    className=" w-full"
   >
     {children}
   </motion.div>
