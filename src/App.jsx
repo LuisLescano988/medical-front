@@ -17,7 +17,7 @@ function App() {
     <Suspense fallback={<div>Loading...</div>}>
       <AnimatePresence mode='wait'>
         <div className='flex flex-row w-screen'>
-          <div className='w-1/4 fixed'>
+          <div className=' fixed'>
             <NavBar />
           </div>
           <div className=' w-screen'>

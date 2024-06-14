@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useState } from 'react'
 import { Link } from 'react-router-dom';
 import { IoPersonCircleOutline } from "react-icons/io5";
 import { GoHome } from "react-icons/go";
@@ -6,39 +6,46 @@ import { IoSettingsOutline } from "react-icons/io5";
 import { ImExit } from "react-icons/im";
 
 
-const NavBar = () => {
+const NavBar = ({appClose}) => {
+  const [open, setOpen] = useState(false)
+
+
   return (
-    <div className=' h-screen bg-slate-100 max-sm:hover:w-52 w-[45%] lg:w-[30%] hover:w-[130%] transition-all duration-300 hover:shadow-2xl hover:shadow-cyan-300 shadow shadow-cyan-300 group'>
-      <div className='flex flex-col h-screen justify-between pt-[15%] lg:gap-[5%] lg:px-5 px-3'>
-        <div>
+    <div className={` flex flex-row pl-[15%] ${open?'pr-[500%]':'pr-0'} h-screen bg-slate-100 w-16 transition-all duration-150 hover:shadow-2xl hover:shadow-cyan-300 shadow-cyan-300 group`}
+    onClick={()=>setOpen(!open)}
+    onMouseLeave={()=>setOpen(false)}
+    >
+      <div className='flex flex-col h-screen justify-between '>
+        <div className=' flex flex-col justify-center items-center gap-5 pt-[50%]'>
           <Link to='/' className='flex relative flex-row items-center'>
-            <GoHome className=' max-sm:size-12 size-10' />
-            <div className='relative w-0 flex items-center'>
-              <div className=' hover:font-black max-md:text-sm absolute w-44 flex flex-row group-hover:opacity-100 opacity-0 duration-200'>Home</div>
+            <GoHome className=' size-10' />
+            <div className='relative flex items-center'>
+              <div className={` text-sm text-left absolute w-44 ${open?'opacity-100 hover:font-extrabold':'opacity-0 -translate-x-72 '} flex-row duration-150`}>12345678901234567890123456789012</div>
             </div>
           </Link>
           <div className='flex relative flex-row items-center'>
-            <IoPersonCircleOutline className=' max-sm:size-12 size-10' />
+            <IoPersonCircleOutline className=' size-10' />
             <div className='relative w-0 flex items-center'>
-              <div className=' hover:font-black max-md:text-sm absolute w-44 flex flex-row group-hover:opacity-100 opacity-0 duration-200'>Miguelo andrade</div>
+              <div className={` text-sm text-left absolute w-44 ${open?'opacity-100 hover:font-extrabold':'opacity-0 -translate-x-72 '} flex-row duration-150`}>Miguelo Andrade</div>
             </div>
           </div>
-          <div className='flex relative flex-row items-center'>
-            <IoSettingsOutline className=' max-sm:size-12 size-10' />
+          <div className='flex relative flex-row  items-center'>
+            <IoSettingsOutline className=' size-10' />
             <div className='relative w-0 flex items-center'>
-              <div className=' hover:font-black max-md:text-sm absolute w-44 flex flex-row group-hover:opacity-100 opacity-0 duration-200'>Cambiar contraseña</div>
+              <div className={` text-sm text-left absolute w-44 ${open?'opacity-100 hover:font-extrabold':'opacity-0 -translate-x-72 '} flex-row duration-150`}>Cambiar contraseña</div>
             </div>
           </div>
         </div>
-        <div className=' mb-[25%]'>
+        <div className=' mb-[50%]'>
           <div className='flex relative flex-row items-center'>
-            <ImExit className=' max-sm:size-12 size-10 ' />
+            <ImExit className=' size-10 ' />
             <div className='relative w-0 flex items-center'>
-              <div className=' hover:font-black max-md:text-sm absolute w-44 flex flex-row group-hover:opacity-100 opacity-0 duration-200'>Cerrar sesión</div>
+              <div className={` text-sm text-left absolute w-44 ${open?'opacity-100 hover:font-extrabold':'opacity-0 -translate-x-72 '} flex-row duration-150`}>Cerrar sesión</div>
             </div>
           </div>
         </div>
       </div>
+      {/* <div className='h-screen bg-slate-100 transition-all duration-500 w-0 group-hover:w-44'></div> */}
     </div>
   )
 }
