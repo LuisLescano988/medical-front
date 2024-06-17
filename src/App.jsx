@@ -1,24 +1,41 @@
-import { BrowserRouter as Router, Routes, Route, useLocation } from 'react-router-dom';
-import { Suspense } from 'react';
+import { BrowserRouter as Router, Routes, Route, useLocation, useNavigate } from 'react-router-dom';
+import { Suspense, useEffect, useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import './App.css';
 import Home from './Views/Home';
 import Patients from './Views/Patients';
 import Recipes from './Views/Recipes';
 import Statistics from './Views/Statistics';
-import { IoPersonCircleOutline } from "react-icons/io5";
 import NavBar from './Components/NavBar';
 import ClinicHistory from './Views/ClinicHistory';
+import { IoMdArrowRoundBack } from "react-icons/io";
+import { getPatients, getRecipes } from './Middleware/Actions';
+import { useDispatch } from 'react-redux';
+
 
 function App() {
   const location = useLocation();
+  const navigate = useNavigate();
+  const [opened, setOpened] = useState(false);
+  const dispatch = useDispatch()
+  const logo=1
+
+  
+  useEffect(() => {
+    dispatch(getRecipes())
+    dispatch(getPatients())
+  }, [])
+
 
   return (
     <Suspense fallback={<div>Loading...</div>}>
       <AnimatePresence mode='wait'>
         <div className='flex flex-row w-screen'>
           <div className=' fixed'>
-            <NavBar />
+            <NavBar opened={opened} setOpened={setOpened} />
+            <div onClick={() => navigate(-1)} className={` z-0 ${opened?'hidden':'absolute'} left-[115%] top-[3.7%] `}>
+              <IoMdArrowRoundBack className=' max-sm:size-7 size-8 border-4 border-teal-100 hover:border-teal-600 transition-all duration-300 rounded-full' />
+            </div>
           </div>
           <div className=' w-screen'>
             <Routes location={location} key={location.pathname}>
@@ -26,7 +43,7 @@ function App() {
               <Route path="/patients" element={<PageWrapper><Patients /></PageWrapper>} />
               <Route path="/recipes" element={<PageWrapper><Recipes /></PageWrapper>} />
               <Route path="/statistics" element={<PageWrapper><Statistics /></PageWrapper>} />
-              <Route path="/history" element={<PageWrapper><ClinicHistory/></PageWrapper>} />
+              <Route path="/history" element={<PageWrapper><ClinicHistory /></PageWrapper>} />
             </Routes>
           </div>
         </div>

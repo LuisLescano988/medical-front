@@ -1,27 +1,26 @@
-import React, { useEffect, useState } from 'react'
-import { NavLink } from 'react-router-dom'
-import axios from 'axios'
-import { useSelector } from 'react-redux'
+import React, { useEffect } from 'react'
+import { useDispatch, useSelector } from 'react-redux'
 import SearchBar from '../Components/SearchBar'
+import TableGrid from '../Components/TableGrid'
+import { getPatients } from '../Middleware/Actions'
 
 const Patients = () => {
-    const patients = useSelector(state => state.patients)
-    const currentElement = 'pacientes'
+    const elements = useSelector(state => state.patients)
+    const dispatch = useDispatch()
+
+    useEffect(() => {
+        dispatch(getPatients())
+    }, [])
+
 
     return (
         <div id='pacientes' className=' h-screen flex flex-col items-center '>
             <div className=' flex flex-col w-full'>
                 <div className=' flex justify-center w-full'>
-                    <SearchBar searchElement={currentElement} />
+                    <SearchBar />
                 </div>
-                <div className=' flex ml-[20%]'>
-                    <ul className='bg-slate-200 h-full w-11/12'>
-                        <li>a</li>
-                        <li>b</li>
-                    </ul>
-                    {/* {
-                        patients.map()
-                    } */}
+                <div className=''>
+                    <TableGrid elements={elements} />
                 </div>
             </div>
         </div>

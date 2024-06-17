@@ -1,54 +1,22 @@
 const initialState = {
-    videogames: [],
-    videogames2: [],
-    genres: [],
-    platforms: [],
+    recipes:[],
     details: [],
-    patients:[
-        {
-            "nombre": "Ratin",
-            "apellido": "Siniestro",
-            "sexo": "M",
-            "fecha_nacimiento": "1985-05-15",
-            "obra_social": "OSDE",
-            "numero_afiliado": "12345678",
-            "dni": "12345678",
-            "provincia": "Buenos Aires",
-            "ciudad": "La Plata",
-            "medicacion": "Ninguna",
-            "historia_clinica": "Sin antecedentes",
-            "edad": 39
-          },
-          {
-            "nombre": "Fede",
-            "apellido": "Judio Karnatz",
-            "sexo": "M",
-            "fecha_nacimiento": "1985-05-15",
-            "obra_social": "OSDE",
-            "numero_afiliado": "12345678",
-            "dni": "12345678",
-            "provincia": "Buenos Aires",
-            "ciudad": "La Plata",
-            "medicacion": "Ninguna",
-            "historia_clinica": "Sin antecedentes",
-            "edad": 39
-          }
-    ]
+    patients:[]
 }
 
 export default function rootReducer(state = initialState, { type, payload }) {
     switch (type) {
-        case 'GET_GAMES':
+        case 'GET_PATIENTS':
             return {
                 ...state,
-                videogames: payload,
-                videogames2: payload
+                patients: payload,
+                patients2: payload
             };
 
-        case 'GET_GENRES':
+        case 'GET_RECIPES':
             return {
                 ...state,
-                genres: payload
+                recipes: payload
             }
 
         case 'GET_PLATFORMS':

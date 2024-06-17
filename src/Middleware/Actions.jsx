@@ -1,11 +1,26 @@
 import axios from 'axios';
 
-export function getGames() {
+export function getPatients() {
     return function (dispatch) {
-        axios.get('https://henry-videogames-production.up.railway.app/videogames')
+        axios.get('http://127.0.0.1:8000/api/pacientes/')
             .then(json => {
                 return dispatch({
-                    type: 'GET_GAMES',
+                    type: 'GET_PATIENTS',
+                    payload: json.data
+                })
+            })
+            .catch((error) => {
+                console.log(error)
+            })
+    }
+}
+
+export function getRecipes() {
+    return function (dispatch) {
+        axios.get('http://127.0.0.1:8000/api/users/medicos/')
+            .then(json => {
+                return dispatch({
+                    type: 'GET_RECIPES',
                     payload: json.data
                 })
             })
