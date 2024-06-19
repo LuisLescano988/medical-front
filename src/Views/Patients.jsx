@@ -1,25 +1,30 @@
-import React, { useEffect } from 'react'
+import React, { useEffect, useState } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 import SearchBar from '../Components/SearchBar'
 import TableGrid from '../Components/TableGrid'
 import { getPatients } from '../Middleware/Actions'
+import AddPatient from '../Components/AddPatient'
 
 const Patients = () => {
     const elements = useSelector(state => state.patients)
     const dispatch = useDispatch()
+    const [prevLength, setPrevLength] = useState(elements?elements.length:0)
 
     useEffect(() => {
-        dispatch(getPatients())
-    }, [])
+        if(elements.length !== prevLength){
+            dispatch(getPatients())
+            setPrevLength(elements.length)
+        }
+    }, [elements])
 
 
     return (
-        <div id='pacientes' className=' h-screen flex flex-col items-center '>
-            <div className=' flex flex-col w-full'>
-                <div className=' flex justify-center w-full'>
-                    <SearchBar />
+        <div id='pacientes' className='flex flex-col '>
+            <div className=' flex flex-col'>
+                <div className=' flex justify-around'>
+                    <SearchBar searchElement='pacientes'/>
                 </div>
-                <div className=''>
+                <div className=' '>
                     <TableGrid elements={elements} />
                 </div>
             </div>

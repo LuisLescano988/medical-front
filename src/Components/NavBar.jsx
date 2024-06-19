@@ -11,7 +11,7 @@ const NavBar = ({ opened, setOpened }) => {
   
 
   return (
-    <div className={` flex flex-row pl-[15%] ${opened ? 'pr-[500%]' : 'pr-0'} h-screen bg-slate-100 w-16 transition-all duration-300 hover:shadow-xl hover:shadow-cyan-300 shadow-cyan-300`}
+    <div className={` flex flex-row pl-[15%] ${opened ? 'pr-[500%]' : 'pr-0'} h-screen bg-slate-300 w-16 transition-all duration-300 hover:shadow-xl hover:shadow-cyan-300 shadow-cyan-300`}
       onClick={() => setOpened(!opened)}
       onMouseLeave={() => setOpened(false)}
     >

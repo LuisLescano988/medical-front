@@ -46,16 +46,18 @@ export function getDetails(id) {
     }
 }
 
-export function postGame(payload) {
+export function addPatient(payload) {
     return function (dispatch) {
-        axios
-            .post('https://henry-videogames-production.up.railway.app/videogames', payload)
+        return axios
+            .post('http://127.0.0.1:8000/api/pacientes/', payload)
             .then((info) => {
-                return dispatch({
-                    type: 'POST_GAME',
-                    payload: info
-                })
-            })
+                const patientData = info.data
+                dispatch({
+                    type: 'ADD_PATIENT',
+                    payload: patientData
+                });
+                return patientData;
+            });
     }
 }
 

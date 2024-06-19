@@ -3,3 +3,8 @@
   text-align: center;
   cursor:default;
 }
+
+input[type="date"]::-webkit-calendar-picker-indicator {
+  display:table-row;
+  -webkit-appearance: none;
+}

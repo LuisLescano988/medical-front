@@ -10,7 +10,7 @@ import NavBar from './Components/NavBar';
 import ClinicHistory from './Views/ClinicHistory';
 import { IoMdArrowRoundBack } from "react-icons/io";
 import { getPatients, getRecipes } from './Middleware/Actions';
-import { useDispatch } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 
 
 function App() {
@@ -18,26 +18,57 @@ function App() {
   const navigate = useNavigate();
   const [opened, setOpened] = useState(false);
   const dispatch = useDispatch()
-  const logo=1
+  const patients = useSelector(state => state.patients)
+  const recipes = useSelector(state => state.recipes)
+  // const historys = useSelector(state => state.historys)
+  // const elements = [...patients, ...recipes]
+  const [prevPatients, setPrevPatients] = useState(patients ? patients.length : 0)
+  const [prevRecipes, setPrevRecipes] = useState(recipes ? recipes.length : 0)
 
-  
+
   useEffect(() => {
-    dispatch(getRecipes())
-    dispatch(getPatients())
+    if (recipes.length == 0 || recipes.length !== prevRecipes) {
+      dispatch(getRecipes())
+      setPrevRecipes(recipes.length)
+    }
+    if (patients.length == 0 || patients.length !== prevPatients) {
+      dispatch(getPatients())
+      setPrevPatients(patients.length)
+    }
+    const handleKeyDown = (event) => {
+      if (event.key === 'F5') {
+        // alert("No actualizar a menos que sea esctrictamente necesario")
+        event.preventDefault();
+      }
+    };
+
+    // const handleBeforeUnload = (event) => {
+    //   event.preventDefault(alert('No reinixciar la web a menos que sea estrictamente necesario'));      
+    //   event.returnValue = '';
+    // };
+
+    window.addEventListener('keydown', handleKeyDown);
+    // window.addEventListener('beforeunload', handleBeforeUnload);
+
+    return () => {
+      window.removeEventListener('keydown', handleKeyDown);
+      // window.removeEventListener('beforeunload', handleBeforeUnload);
+    };
   }, [])
+
 
 
   return (
     <Suspense fallback={<div>Loading...</div>}>
       <AnimatePresence mode='wait'>
-        <div className='flex flex-row w-screen'>
+        <div className='flex flex-row bg-slate-200'>
           <div className=' fixed'>
             <NavBar opened={opened} setOpened={setOpened} />
-            <div onClick={() => navigate(-1)} className={` z-0 ${opened?'hidden':'absolute'} left-[115%] top-[3.7%] `}>
+            <div onClick={() => navigate(-1)} className={` z-0 ${opened ? 'hidden' : 'absolute'} left-[115%] top-[3.7%] `}>
               <IoMdArrowRoundBack className=' max-sm:size-7 size-8 border-4 border-teal-100 hover:border-teal-600 transition-all duration-300 rounded-full' />
             </div>
           </div>
-          <div className=' w-screen'>
+          <div className=''>
             <Routes location={location} key={location.pathname}>
               <Route path="/" element={<PageWrapper><Home /></PageWrapper>} />
               <Route path="/patients" element={<PageWrapper><Patients /></PageWrapper>} />
@@ -58,7 +89,7 @@ const PageWrapper = ({ children }) => (
     animate={{ opacity: 1 }}
     exit={{ opacity: 0.1 }}
     transition={{ duration: 0.2 }}
-    className=" w-full"
+    className=" w-screen bg-slate-200 h-screen"
   >
     {children}
   </motion.div>
