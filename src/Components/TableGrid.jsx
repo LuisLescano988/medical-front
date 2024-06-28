@@ -1,13 +1,9 @@
 import React, { useEffect, useState } from 'react'
 import { createColumnHelper, flexRender, getCoreRowModel, getFilteredRowModel, getPaginationRowModel, useReactTable } from '@tanstack/react-table'
-import { useDispatch } from 'react-redux'
-import { addPatient } from '../Middleware/Actions'
-import Swal from 'sweetalert2'
-import AddPatient from './AddPatient'
+import { MdOutlineDeleteForever } from "react-icons/md";
 
-const TableGrid = ({ elements:initialElements }) => {
+const TableGrid = ({ elements: initialElements, handleInputUpdate, itemsToSearch }) => {
     const [elements, setElements] = useState(initialElements)
-    const dispatch = useDispatch()
     const [globalFilter, setGlobalFilter] = useState()
     const [formData, setFormData] = useState({})
     const columnHelper = createColumnHelper()
@@ -23,55 +19,47 @@ const TableGrid = ({ elements:initialElements }) => {
         setFormData({
             ...formData,
             [key]: e.target.value
-        })
+        });
+        handleInputUpdate(key, e.target.value)
     }
 
     const table = useReactTable({
         data: elements || [],
         columns,
         state: {
-            globalFilter,
+            globalFilter:itemsToSearch,
         },
         getFilteredRowModel: getFilteredRowModel(),
         getCoreRowModel: getCoreRowModel(),
         getPaginationRowModel: getPaginationRowModel(),
     })
 
-    const handleSubmit = () => {
-        dispatch(addPatient(formData))
-            .then(newPatient => {
-                setElements([...elements, newPatient]);
-                Swal.fire('Se agregó correctamente');
-            })
-            .catch(error => {
-                console.error('Error al agregar paciente:', error);
-                Swal.fire('Error al agregar paciente');
-            });
-    };
-
     useEffect(() => {
         setElements(initialElements);
     }, [initialElements]);
-    
+
 
 
     if (!elements || elements.length === 0) {
-        return <div>Cargue informacion para ver</div>;
+        return <div>
+            cargue informacion para empezar
+        </div>
     }
 
     return (
-        <div className=' flex flex-col w-fit justify-center items-start max-sm:ml-[20%] ml-[8%]'>
-            <table className=' '>
-                <thead className=' bg-teal-900 text-slate-100'>
+        <div className=' flex flex-col w-full items-end justify-center pr-[2%] '>
+            <table className=' w-11/12 '>
+                <thead className=' bg-teal-900 border-b-2 border-slate-300 text-slate-100'>
                     {
                         table.getHeaderGroups().map(headerGroup => (
                             <tr key={headerGroup.id} className='' >
                                 {headerGroup.headers.map(header => (
-                                    <th key={header.id} className=' text-left pr-3 pl-1 max-xl:pr-1 font-medium max-xl:font-normal max-lg:text-xs font-sans'>
+                                    <th key={header.id} className={` ${(header.id=='fecha_nacimiento' || header.id == 'sexo' || header.id == 'edad' )?' pr-0 w-[1%]':''} text-left pr-3 pl-1 max-xl:pr-1 font-medium max-xl:font-normal max-lg:text-xs font-sans`}>
                                         {flexRender(header.column.columnDef.header,
                                             header.getContext())}
                                     </th>
                                 ))}
+                                <th className=' flex flex-row justify-center mt-[35%] font-medium max-xl:font-normal max-lg:text-xs font-sans'> <MdOutlineDeleteForever className=' size-6'/> </th>
                             </tr>
                         ))
                     }
@@ -85,11 +73,12 @@ const TableGrid = ({ elements:initialElements }) => {
                                         {flexRender(cell.column.columnDef.cell, cell.getContext())}
                                     </td>
                                 ))}
+                                <td className=' text-slate-100'><input type="checkbox" /></td>
                             </tr>
                         ))
                         : (
                             <tr>
-                                <td colSpan={12}>Cargue informacion para ver</td>
+                                <td colSpan={12}>No hay resultados que coincidan</td>
                             </tr>
                         )
                     }
@@ -99,7 +88,7 @@ const TableGrid = ({ elements:initialElements }) => {
                         {keys.map((key, index) => (
                             <td key={index} className=' w-2'>
                                 <input
-                                    className=' w-[90%] cursor-default px-1 bg-white bg-opacity-20 rounded-md text-slate-200 mr-2 appearance-none placeholder:text-opacity-50 placeholder:text-slate-200 outline-none'
+                                    className={` w-[90%] ${key=='fecha_nacimiento'? ' ' :''} cursor-default px-1 bg-white bg-opacity-20 rounded-md text-slate-200 mr-2 appearance-none placeholder:text-opacity-50 placeholder:text-slate-200 outline-none`}
                                     type={key == "fecha_nacimiento" ? "date" : "text"}
                                     placeholder={`${key.replace(/_/g, ' ').slice(0, 13)}`}
                                     value={formData[key] || ''}
@@ -107,14 +96,10 @@ const TableGrid = ({ elements:initialElements }) => {
                                 />
                             </td>
                         ))}
+                        <td className=' w-2'></td>
                     </tr>
                 </tfoot>
             </table>
-            <div className=' flex w-full justify-end max-sm:justify-start'>
-                <button onClick={handleSubmit} >
-                    <AddPatient />
-                </button>
-            </div>
         </div>
     )
 }

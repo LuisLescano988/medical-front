@@ -17,45 +17,6 @@ function App() {
   const location = useLocation();
   const navigate = useNavigate();
   const [opened, setOpened] = useState(false);
-  const dispatch = useDispatch()
-  const patients = useSelector(state => state.patients)
-  const recipes = useSelector(state => state.recipes)
-  // const historys = useSelector(state => state.historys)
-  // const elements = [...patients, ...recipes]
-  const [prevPatients, setPrevPatients] = useState(patients ? patients.length : 0)
-  const [prevRecipes, setPrevRecipes] = useState(recipes ? recipes.length : 0)
-
-
-  useEffect(() => {
-    if (recipes.length == 0 || recipes.length !== prevRecipes) {
-      dispatch(getRecipes())
-      setPrevRecipes(recipes.length)
-    }
-    if (patients.length == 0 || patients.length !== prevPatients) {
-      dispatch(getPatients())
-      setPrevPatients(patients.length)
-    }
-    const handleKeyDown = (event) => {
-      if (event.key === 'F5') {
-        // alert("No actualizar a menos que sea esctrictamente necesario")
-        event.preventDefault();
-      }
-    };
-
-    // const handleBeforeUnload = (event) => {
-    //   event.preventDefault(alert('No reinixciar la web a menos que sea estrictamente necesario'));      
-    //   event.returnValue = '';
-    // };
-
-    window.addEventListener('keydown', handleKeyDown);
-    // window.addEventListener('beforeunload', handleBeforeUnload);
-
-    return () => {
-      window.removeEventListener('keydown', handleKeyDown);
-      // window.removeEventListener('beforeunload', handleBeforeUnload);
-    };
-  }, [])
-
 
 
   return (
