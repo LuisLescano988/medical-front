@@ -11,7 +11,8 @@ const TableGrid = ({ elements: initialElements, handleInputUpdate, itemsToSearch
     const columns = keys.map(key =>
         columnHelper.accessor(key, {
             cell: (info) => <span>{info.getValue()}</span>,
-            header: key.replace(/_/g, ' ').charAt(0).toUpperCase() + key.replace(/_/g, ' ').slice(1)
+            header: key.replace(/_/g, ' ').charAt(0).toUpperCase() + key.replace(/_/g, ' ').slice(1),
+            meta:{width:'w-[50px]'}
         })
     )
 
@@ -27,7 +28,7 @@ const TableGrid = ({ elements: initialElements, handleInputUpdate, itemsToSearch
         data: elements || [],
         columns,
         state: {
-            globalFilter:itemsToSearch,
+            globalFilter: itemsToSearch,
         },
         getFilteredRowModel: getFilteredRowModel(),
         getCoreRowModel: getCoreRowModel(),
@@ -36,6 +37,7 @@ const TableGrid = ({ elements: initialElements, handleInputUpdate, itemsToSearch
 
     useEffect(() => {
         setElements(initialElements);
+        table.setPageSize(15)
     }, [initialElements]);
 
 
@@ -52,14 +54,14 @@ const TableGrid = ({ elements: initialElements, handleInputUpdate, itemsToSearch
                 <thead className=' bg-teal-900 border-b-2 border-slate-300 text-slate-100'>
                     {
                         table.getHeaderGroups().map(headerGroup => (
-                            <tr key={headerGroup.id} className='' >
+                            <tr key={headerGroup.id} className=' ' >
                                 {headerGroup.headers.map(header => (
-                                    <th key={header.id} className={` ${(header.id=='fecha_nacimiento' || header.id == 'sexo' || header.id == 'edad' )?' pr-0 w-[1%]':''} text-left pr-3 pl-1 max-xl:pr-1 font-medium max-xl:font-normal max-lg:text-xs font-sans`}>
+                                    <th key={header.id} className={` text-left pr-3 pl-1 max-xl:pr-1 font-medium max-xl:font-normal max-lg:text-xs font-sans`}>
                                         {flexRender(header.column.columnDef.header,
                                             header.getContext())}
                                     </th>
                                 ))}
-                                <th className=' flex flex-row justify-center mt-[35%] font-medium max-xl:font-normal max-lg:text-xs font-sans'> <MdOutlineDeleteForever className=' size-6'/> </th>
+                                <th className=' flex flex-col justify-center items-center mt-[15%] font-medium max-xl:font-normal max-lg:text-xs font-sans'> <MdOutlineDeleteForever className=' size-5' /> <input type="checkbox" /> </th>
                             </tr>
                         ))
                     }
@@ -69,7 +71,7 @@ const TableGrid = ({ elements: initialElements, handleInputUpdate, itemsToSearch
                         ? table.getRowModel().rows.map((row, i) => (
                             <tr key={row.id} className={`${i % 2 ? 'bg-teal-600 hover:bg-teal-500' : 'hover:bg-teal-700 bg-teal-900'}`}>
                                 {row.getVisibleCells().map(cell => (
-                                    <td key={cell.id} className=' px-1 pr-2 text-slate-100 text-left'>
+                                    <td key={cell.id} className={` max-w-1 whitespace-nowrap overflow-hidden px-1 pr-2 text-slate-100 text-left`}>
                                         {flexRender(cell.column.columnDef.cell, cell.getContext())}
                                     </td>
                                 ))}
@@ -86,9 +88,9 @@ const TableGrid = ({ elements: initialElements, handleInputUpdate, itemsToSearch
                 <tfoot>
                     <tr className='hover:bg-teal-500 bg-teal-600'>
                         {keys.map((key, index) => (
-                            <td key={index} className=' w-2'>
+                            <td key={index} className=' '>
                                 <input
-                                    className={` w-[90%] ${key=='fecha_nacimiento'? ' ' :''} cursor-default px-1 bg-white bg-opacity-20 rounded-md text-slate-200 mr-2 appearance-none placeholder:text-opacity-50 placeholder:text-slate-200 outline-none`}
+                                    className={` w-[90%] ${key == 'fecha_nacimiento' ? ' w-[80%]' : ''} cursor-default px-1 bg-white bg-opacity-20 rounded-md text-slate-200 mr-2 appearance-none placeholder:text-opacity-50 placeholder:text-slate-200 outline-none`}
                                     type={key == "fecha_nacimiento" ? "date" : "text"}
                                     placeholder={`${key.replace(/_/g, ' ').slice(0, 13)}`}
                                     value={formData[key] || ''}
@@ -96,10 +98,63 @@ const TableGrid = ({ elements: initialElements, handleInputUpdate, itemsToSearch
                                 />
                             </td>
                         ))}
-                        <td className=' w-2'></td>
+                        <td className=''></td>
                     </tr>
                 </tfoot>
             </table>
+            <div className=" absolute bottom-[5%] flex items-center justify-end mt-2 gap-2">
+                <button
+                    onClick={() => {
+                        table.previousPage();
+                    }}
+                    disabled={!table.getCanPreviousPage()}
+                    className="max-sm:text-xs p-1 border border-gray-300 px-2 disabled:opacity-30"
+                >
+                    {"<"}
+                </button>
+                <button
+                    onClick={() => {
+                        table.nextPage();
+                    }}
+                    disabled={!table.getCanNextPage()}
+                    className="max-sm:text-xs p-1 border border-gray-300 px-2 disabled:opacity-30"
+                >
+                    {">"}
+                </button>
+
+                <span className="flex max-sm:text-xs items-center gap-1">
+                    <div>Pagina</div>
+                    <strong>
+                        {table.getState().pagination.pageIndex + 1} of{" "}
+                        {table.getPageCount()}
+                    </strong>
+                </span>
+                <span className="flex max-sm:text-xs items-center gap-1">
+                    | Ir a pagina:
+                    <input
+                        type="number"
+                        defaultValue={table.getState().pagination.pageIndex + 1}
+                        onChange={(e) => {
+                            const page = e.target.value ? Number(e.target.value) - 1 : 0;
+                            table.setPageIndex(page);
+                        }}
+                        className=" border p-1 rounded w-16 bg-transparent"
+                    />
+                </span>
+                {/* <select
+                    value={table.getState().pagination.pageSize}
+                    onChange={(e) => {
+                        table.setPageSize(15);
+                    }}
+                    className="p-2 bg-transparent"
+                >
+                    {[10, 15].map((pageSize) => (
+                        <option key={pageSize} value={pageSize}>
+                            Show {pageSize}
+                        </option>
+                    ))}
+                </select> */}
+            </div>
         </div>
     )
 }

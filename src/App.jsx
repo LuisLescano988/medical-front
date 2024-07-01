@@ -11,6 +11,7 @@ import ClinicHistory from './Views/ClinicHistory';
 import { IoMdArrowRoundBack } from "react-icons/io";
 import { getPatients, getRecipes } from './Middleware/Actions';
 import { useDispatch, useSelector } from 'react-redux';
+import LoginView from './Views/Login';
 
 
 function App() {
@@ -31,8 +32,9 @@ function App() {
           </div>
           <div className=''>
             <Routes location={location} key={location.pathname}>
+              <Route path='/login' element={<PageWrapper><LoginView/></PageWrapper>} />
               <Route path="/" element={<PageWrapper><Home /></PageWrapper>} />
-              <Route path="/patients" element={<PageWrapper><Patients /></PageWrapper>} />
+              <Route path="/patients" element={<PageWrapper><Patients/></PageWrapper>} />
               <Route path="/recipes" element={<PageWrapper><Recipes /></PageWrapper>} />
               <Route path="/statistics" element={<PageWrapper><Statistics /></PageWrapper>} />
               <Route path="/history" element={<PageWrapper><ClinicHistory /></PageWrapper>} />

@@ -1,8 +1,19 @@
 import axios from 'axios';
 
+const usersUrl = 'http://127.0.0.1:8000/api/users/'
+const registerUrl = 'http://127.0.0.1:8000/api/users/register/'
+const loginUrl = 'http://127.0.0.1:8000/api/users/login/'
+const refreshTokenUrl = 'http://127.0.0.1:8000/api/users/token/refresh'
+const patientsUrl = 'http://127.0.0.1:8000/api/pacientes/'
+const recipesUrl = 'http://127.0.0.1:8000/api/recetas/'
+const clinicHistoryUrl = 'PendienteGaio'
+const laboratoryUrl = 'PendienteGaio'
+const qrCreateUrl = 'PendienteGaio'
+const qrReadUrl = 'PendienteGaio'
+
 export function getPatients() {
     return function (dispatch) {
-        axios.get('http://127.0.0.1:8000/api/pacientes/')
+        axios.get(patientsUrl)
             .then(json => {
                 return dispatch({
                     type: 'GET_PATIENTS',
