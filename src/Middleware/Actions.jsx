@@ -11,6 +11,38 @@ const laboratoryUrl = 'PendienteGaio'
 const qrCreateUrl = 'PendienteGaio'
 const qrReadUrl = 'PendienteGaio'
 
+export function addUser(payload) {
+    return function (dispatch) {
+        return axios
+            .post(registerUrl, payload)
+            .then((info) => {
+                const patientData = info.data
+                dispatch({
+                    type: 'ADD_USER',
+                    payload: patientData
+                });
+                console.log("AQUI")
+                return patientData;
+            });
+    }
+}
+
+export function loginUser(payload) {
+    return function (dispatch) {
+        return axios
+            .post(loginUrl, payload)
+            .then((info) => {
+                const userData = info.data
+                dispatch({
+                    type: 'LOGIN_USER',
+                    payload: userData
+                });
+                console.log("AQUI")
+                return userData;
+            });
+    }
+}
+
 export function getPatients() {
     return function (dispatch) {
         axios.get(patientsUrl)

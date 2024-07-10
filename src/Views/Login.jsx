@@ -7,7 +7,7 @@ const LoginView = () => {
 
     return (
         <div className=' flex flex-col h-screen w-full items-center justify-center'>
-            <div className=' flex justify-center items-start w-4/12 h-2/3 rounded-2xl bg-teal-200'>{switcher ?
+            <div className=' flex justify-center items-start max-sm:w-7/12 w-4/12 h-2/3 rounded-2xl bg-teal-200'>{switcher ?
                 <Login /> :
                 <Register />
             }

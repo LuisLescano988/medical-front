@@ -31,26 +31,26 @@ const Patients = () => {
             [key]: e.target.value
         })
     }
+    
+    const handleSubmit = () => {
+        dispatch(addPatient(addPatientForm))
+        .then(() => {
+            setAddPatientForm({})
+            Swal.fire(`Se agregó correctamente`);
+        })
+        .then(() => {
+            location.reload()
+        })
+        .catch(error => {
+            console.error('Error al agregar paciente:', error);
+            Swal.fire('Error al agregar paciente')
+        });
+    }
 
     const handleSearchChange = (value)=>{
         setSearchValue(value)
     }
-
-    const handleSubmit = () => {
-        dispatch(addPatient(addPatientForm))
-            .then(() => {
-                setAddPatientForm({})
-                Swal.fire(`Se agregó correctamente`);
-            })
-            .then(() => {
-                location.reload()
-            })
-            .catch(error => {
-                console.error('Error al agregar paciente:', error);
-                Swal.fire('Error al agregar paciente')
-            });
-    }
-
+    
     const handleInputUpdate = (key, value) => {
         setAddPatientForm({
             ...addPatientForm,
