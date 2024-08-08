@@ -1,20 +1,99 @@
 import React, { useEffect, useState } from 'react'
 import { createColumnHelper, flexRender, getCoreRowModel, getFilteredRowModel, getPaginationRowModel, useReactTable } from '@tanstack/react-table'
 import { MdOutlineDeleteForever } from "react-icons/md";
+import { FiEdit } from "react-icons/fi";
+import { useSelector } from 'react-redux';
+import Swal from 'sweetalert2';
+import withReactContent from 'sweetalert2-react-content';
+import { useNavigate } from 'react-router-dom';
+import AddMedication from './AddMedication';
 
-const TableGrid = ({ elements: initialElements, handleInputUpdate, itemsToSearch }) => {
+const TableGrid = ({ elements: initialElements, handleInputUpdate, itemsToSearch, hiddenColumns = [] }) => {
+    const navigate = useNavigate()
     const [elements, setElements] = useState(initialElements)
-    const [globalFilter, setGlobalFilter] = useState()
     const [formData, setFormData] = useState({})
     const columnHelper = createColumnHelper()
-    const keys = elements && elements.length > 0 ? Object.keys(elements[0]).filter(key => key !== 'id') : [];
+    const patients = useSelector(state => state.patients)
+
+    const getPatientNameById = (id) => {
+        const patient = patients.find(patient => patient.id === id);
+        return patient ? `${patient.nombre} ${patient.apellido}` : id;
+    };
+
+    const keys = elements && elements.length > 0 ? Object.keys(elements[0]).filter(key => key !== 'id' && !hiddenColumns.includes(key)) : [];
     const columns = keys.map(key =>
         columnHelper.accessor(key, {
-            cell: (info) => <span>{info.getValue()}</span>,
+            cell: (info) => {
+                const value = info.getValue();
+                if (key === 'paciente') {
+                    return <span onClick={() => handleCellClick(info)}>{getPatientNameById(info.getValue())}</span>;
+                }
+                if (Array.isArray(value)) {
+                    const concatenatedString = value.map(item => item[Object.keys(item)[0]]).join(', ');
+                    return <span onClick={() => handleCellClick(info)}>{concatenatedString}</span>;
+                }
+                return <span onClick={() => handleCellClick(info)}>{info.getValue()}</span>;
+            },
             header: key.replace(/_/g, ' ').charAt(0).toUpperCase() + key.replace(/_/g, ' ').slice(1),
-            meta:{width:'w-[50px]'}
+            meta: { width: 'w-[50px]' }
         })
     )
+
+    const handleCellClick = (cell) => {
+        const value = cell.getValue();
+        let content;
+        if (cell.column.columnDef.header === 'Paciente') {
+            content = getPatientNameById(value)
+        }
+        else if (Array.isArray(value)) {
+            content = value.map(item => item[Object.keys(item)[0]]).join(', ');
+        }
+        else {
+            content = value;
+        }
+        Swal.fire({
+            title: 'Detalle',
+            html: `<p>${cell.column.columnDef.header}: ${content}</p>`,
+            showCancelButton: true,
+            showConfirmButton: true,
+            confirmButtonText: 'Editar',
+            cancelButtonText: 'Borrar',
+            preConfirm: () => {
+                console.log('Editar', cell);
+            },
+            preCancel: () => {
+                console.log('Borrar', cell);
+            }
+        }).then((result) => {
+            if (result.isConfirmed) {
+                console.log('Confirmado editar');
+            } else if (result.dismiss === Swal.DismissReason.cancel) {
+                console.log('Confirmado borrar');
+            }
+        });
+    };
+
+    const handleAddMedication =  () => {
+        Swal.fire({
+            title: 'Agregar Medicación',
+            html: <AddMedication formData={formData} handleInputChange={handleInputChange} />,
+            showCancelButton: true,
+            showConfirmButton: true,
+            confirmButtonText: 'Guardar',
+            cancelButtonText: 'Cancelar',
+            preConfirm: () => {
+                // Lógica para manejar la validación y guardar los datos
+                console.log('Form Data:', formData);
+            }
+        });
+    }
+
+    const handlePatientNavigate = (event) => {
+        const selectedPath = event.target.value;
+        if (selectedPath === "/patients") {
+            navigate(selectedPath);
+        }
+    }    
 
     const handleInputChange = (e, key) => {
         setFormData({
@@ -61,7 +140,7 @@ const TableGrid = ({ elements: initialElements, handleInputUpdate, itemsToSearch
                                             header.getContext())}
                                     </th>
                                 ))}
-                                <th className=' flex flex-col justify-center items-center mt-[15%] font-medium max-xl:font-normal max-lg:text-xs font-sans'> <MdOutlineDeleteForever className=' size-5' /> <input type="checkbox" /> </th>
+                                <th className=' flex flex-col justify-center items-center mt-[15%] font-medium max-xl:font-normal max-lg:text-xs font-sans'></th>
                             </tr>
                         ))
                     }
@@ -71,11 +150,12 @@ const TableGrid = ({ elements: initialElements, handleInputUpdate, itemsToSearch
                         ? table.getRowModel().rows.map((row, i) => (
                             <tr key={row.id} className={`${i % 2 ? 'bg-teal-600 hover:bg-teal-500' : 'hover:bg-teal-700 bg-teal-900'}`}>
                                 {row.getVisibleCells().map(cell => (
-                                    <td key={cell.id} className={` max-w-1 whitespace-nowrap overflow-hidden px-1 pr-2 text-slate-100 text-left`}>
+                                    <td className={` max-w-1 whitespace-nowrap overflow-hidden px-1 pr-2 text-slate-100 text-left`}
+                                    key={cell.id}>
                                         {flexRender(cell.column.columnDef.cell, cell.getContext())}
                                     </td>
                                 ))}
-                                <td className=' text-slate-100'><input type="checkbox" /></td>
+                                <td className=' flex flex-row text-slate-100'><FiEdit /><MdOutlineDeleteForever /></td>
                             </tr>
                         ))
                         : (
@@ -89,20 +169,38 @@ const TableGrid = ({ elements: initialElements, handleInputUpdate, itemsToSearch
                     <tr className='hover:bg-teal-500 bg-teal-600'>
                         {keys.map((key, index) => (
                             <td key={index} className=' '>
-                                <input
-                                    className={` w-[90%] ${key == 'fecha_nacimiento' ? ' w-[80%]' : ''} cursor-default px-1 bg-white bg-opacity-20 rounded-md text-slate-200 mr-2 appearance-none placeholder:text-opacity-50 placeholder:text-slate-200 outline-none`}
-                                    type={key == "fecha_nacimiento" ? "date" : "text"}
-                                    placeholder={`${key.replace(/_/g, ' ').slice(0, 13)}`}
-                                    value={formData[key] || ''}
-                                    onChange={(e) => handleInputChange(e, key)}
-                                />
+                                {!key.includes("paciente") ?
+                                    <input
+                                        className={` w-[90%] ${key == 'fecha_nacimiento' ? ' w-[80%]' : ''} cursor-default px-1 bg-white bg-opacity-20 rounded-md text-slate-200 mr-2 appearance-none placeholder:text-opacity-50 placeholder:text-slate-200 outline-none`}
+                                        type={key.includes("fecha") ? "date" : "text"}
+                                        placeholder={`${key.replace(/_/g, ' ').slice(0, 13)}`}
+                                        value={formData[key] || ''}
+                                        onChange={(e) =>  handleInputChange(e, key)}
+                                        onClick={ key=='medicacion'? handleAddMedication():null}
+                                    /> :
+                                    <select
+                                        className=' flex items-start bg-teal-500 opacity-70 rounded-md text-white '
+                                        defaultValue={"default"}
+                                        onChange={handlePatientNavigate}
+                                        name="" id="">
+                                        <option value="default" disabled >Seleccione un paciente</option>
+                                        <option value="/patients">
+                                            Agregar paciente
+                                        </option>
+                                        {patients.map(patient => (
+                                        <option key={patient.id} value={patient.id}>
+                                            {patient.nombre} {patient.apellido}
+                                        </option>
+                                        ))}
+                                    </select>
+                                }
                             </td>
                         ))}
                         <td className=''></td>
                     </tr>
                 </tfoot>
             </table>
-            <div className=" absolute bottom-[5%] flex items-center justify-end mt-2 gap-2">
+            <div className=" bottom-[5%] flex items-center justify-end mt-2 gap-2">
                 <button
                     onClick={() => {
                         table.previousPage();
@@ -129,7 +227,7 @@ const TableGrid = ({ elements: initialElements, handleInputUpdate, itemsToSearch
                         {table.getPageCount()}
                     </strong>
                 </span>
-                <span className="flex max-sm:text-xs items-center gap-1">
+                <div className="flex max-sm:text-xs items-center gap-1">
                     | Ir a pagina:
                     <input
                         type="number"
@@ -140,20 +238,7 @@ const TableGrid = ({ elements: initialElements, handleInputUpdate, itemsToSearch
                         }}
                         className=" border p-1 rounded w-16 bg-transparent"
                     />
-                </span>
-                {/* <select
-                    value={table.getState().pagination.pageSize}
-                    onChange={(e) => {
-                        table.setPageSize(15);
-                    }}
-                    className="p-2 bg-transparent"
-                >
-                    {[10, 15].map((pageSize) => (
-                        <option key={pageSize} value={pageSize}>
-                            Show {pageSize}
-                        </option>
-                    ))}
-                </select> */}
+                </div>
             </div>
         </div>
     )

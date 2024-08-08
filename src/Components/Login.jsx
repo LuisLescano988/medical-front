@@ -19,19 +19,18 @@ const Login = () => {
         })
     }
 
-    console.log(userLogin)
-
-    const handleLogin = () => {
+    const handleLogin = (e) => {
+        e.preventDefault();
         dispatch(loginUser(userLogin))
             .then(() => {
-                setUserLogin({})
-                Swal.fire(`Si anda`);
+                setUserLogin({ username: "", password: "" });
+                Swal.fire('Login exitoso');
             })
             .catch(error => {
-                console.error('Error al registrar el usuario:', error);
-                Swal.fire('Error al registrar el usuario')
+                console.error('Error al iniciar sesión:', error);
+                Swal.fire('Error al iniciar sesión');
             });
-    }
+    };
 
     return (
         <div className='flex flex-col justify-between h-full w-full px-[4%]'>
@@ -48,17 +47,23 @@ const Login = () => {
                     <div className=' flex flex-col h-[40%] justify-around'>
                         <div>
                             <input className=' p-1 rounded-md border border-slate-400 w-full' 
-                            type="text" placeholder='Email' onChange={(e) => handleInputChange(e, 'username')}/>
+                            type="text" 
+                            placeholder='Email' 
+                            onChange={(e) => handleInputChange(e, 'username')}
+                            value={userLogin.username}/>
                         </div>
                         <div>
                             <input className=' p-1 rounded-md border border-slate-400 w-full' 
-                            type="text" placeholder='Contraseña' onChange={(e) => handleInputChange(e, 'password')}/>
+                            type="text" 
+                            placeholder='Contraseña' 
+                            onChange={(e) => handleInputChange(e, 'password')}
+                            value={userLogin.password}/>
                         </div>
                     </div>
-                    <div className=' bg-yellow-50 rounded-md p-2'
+                    <button type='submit' className=' bg-yellow-50 rounded-md p-2'
                     onClick={handleLogin}>
                         Ingresar
-                    </div>
+                    </button>
 
                 </form>
             </div>

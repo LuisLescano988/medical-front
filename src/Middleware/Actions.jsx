@@ -1,9 +1,10 @@
-import axios from 'axios';
+import Cookies from 'js-cookie';
+import axiosInstance from '../config/axiosConfig';
 
 const usersUrl = 'http://127.0.0.1:8000/api/users/'
 const registerUrl = 'http://127.0.0.1:8000/api/users/register/'
 const loginUrl = 'http://127.0.0.1:8000/api/users/login/'
-const refreshTokenUrl = 'http://127.0.0.1:8000/api/users/token/refresh'
+const refreshTokenUrl = 'http://127.0.0.1:8000/api/users/token/refresh/'
 const patientsUrl = 'http://127.0.0.1:8000/api/pacientes/'
 const recipesUrl = 'http://127.0.0.1:8000/api/recetas/'
 const clinicHistoryUrl = 'PendienteGaio'
@@ -13,7 +14,7 @@ const qrReadUrl = 'PendienteGaio'
 
 export function addUser(payload) {
     return function (dispatch) {
-        return axios
+        return axiosInstance
             .post(registerUrl, payload)
             .then((info) => {
                 const patientData = info.data
@@ -21,31 +22,61 @@ export function addUser(payload) {
                     type: 'ADD_USER',
                     payload: patientData
                 });
-                console.log("AQUI")
                 return patientData;
             });
     }
 }
 
-export function loginUser(payload) {
-    return function (dispatch) {
-        return axios
-            .post(loginUrl, payload)
-            .then((info) => {
-                const userData = info.data
-                dispatch({
-                    type: 'LOGIN_USER',
-                    payload: userData
-                });
-                console.log("AQUI")
-                return userData;
-            });
-    }
-}
+export const loginUser = (payload) => async (dispatch) => {
+    try {
+        const response = await axiosInstance.post(loginUrl, payload);
+        const { access, refresh, user_id, first_name, last_name } = response.data;
 
-export function getPatients() {
+        Cookies.set('access_token', access, { secure: true, sameSite: 'strict' });
+        Cookies.set('refresh_token', refresh, { secure: true, sameSite: 'strict' });
+        Cookies.set('user_id', user_id, { secure: true, sameSite: 'strict' })
+        Cookies.set('first_name', first_name, { secure: true, sameSite: 'strict' })
+        Cookies.set('last_name', last_name, { secure: true, sameSite: 'strict' })
+
+        dispatch({
+            type: 'LOGIN_SUCCESS',
+        });
+    } catch (error) {
+        console.error('Error al iniciar sesión:', error);
+        throw error;
+    }
+};
+
+export const refreshAccessToken = () => async (dispatch) => {
+    try {
+        const refreshToken = Cookies.get('refresh_token');
+        if (!refreshToken) throw new Error('No refresh token available');
+        
+        const response = await axiosInstance.post(refreshTokenUrl, { refresh: refreshToken });
+        const { access } = response.data;
+        
+        Cookies.set('access_token', access, { secure: true, sameSite: 'strict' });
+        dispatch({ type: 'LOGIN_SUCCESS' })
+    } catch (error) {
+        console.error('Error refreshing access token:', error);
+        dispatch(logoutUser());
+    }
+};
+
+export const logoutUser = () => (dispatch) => {
+    Cookies.remove('access_token');
+    Cookies.remove('refresh_token');
+    dispatch({ type: 'LOGOUT' })
+    location.reload();
+};
+
+export function getPatients(user_id) {
     return function (dispatch) {
-        axios.get(patientsUrl)
+        axiosInstance.get(patientsUrl, {
+            params: {
+                user_id: user_id
+            }
+        })
             .then(json => {
                 return dispatch({
                     type: 'GET_PATIENTS',
@@ -60,7 +91,7 @@ export function getPatients() {
 
 export function getRecipes() {
     return function (dispatch) {
-        axios.get('http://127.0.0.1:8000/api/users/medicos/')
+        axiosInstance.get(recipesUrl)
             .then(json => {
                 return dispatch({
                     type: 'GET_RECIPES',
@@ -73,26 +104,10 @@ export function getRecipes() {
     }
 }
 
-export function getDetails(id) {
-    return async function (dispatch) {
-        try {
-            await axios.get(`https://henry-videogames-production.up.railway.app/videogames/${id}`)
-                .then((game) => {
-                    dispatch({
-                        type: 'GET_GAMES_DETAILS',
-                        payload: game.data
-                    })
-                })
-        } catch (error) {
-            console.log(error)
-        }
-    }
-}
-
 export function addPatient(payload) {
     return function (dispatch) {
-        return axios
-            .post('http://127.0.0.1:8000/api/pacientes/', payload)
+        return axiosInstance
+            .post(patientsUrl, payload)
             .then((info) => {
                 const patientData = info.data
                 dispatch({
@@ -104,62 +119,17 @@ export function addPatient(payload) {
     }
 }
 
-export function editGame({ name, id }) {
-    return async function (dispatch) {
-        return await axios
-        .put(`https://henry-videogames-production.up.railway.app/videogames/${id}`, { name })
-        .then((info) => {
-            return dispatch({
-                type: 'EDIT_GAME',
-                payload: info
-            })
-        })
-    };
-}
-
-export function deleteGame({name, id}) {
-    return async function (dispatch) {        
-        return await axios
-            .delete(`https://henry-videogames-production.up.railway.app/videogames/del/${id}`, {name})
+export function addRecipe(payload) {
+    return function (dispatch) {
+        return axiosInstance
+            .post(recipesUrl, payload)
             .then((info) => {
-                return dispatch({
-                    type: 'DELETE_GAME',
-                    payload: info
-                })
-            })
-    };
-}
-
-export function filterBySource(payload) {
-    return {
-        type: 'FILTER_BY_SOURCE',
-        payload
+                const patientData = info.data
+                dispatch({
+                    type: 'ADD_PATIENT',
+                    payload: patientData
+                });
+                return patientData;
+            });
     }
-};
-
-export function filterByGenres(payload) {
-    return {
-        type: 'FILTER_BY_GENRES',
-        payload
-    }
-};
-
-export function sortByName(payload) {
-    return {
-        type: 'SORT_BY_NAME',
-        payload
-    }
-};
-
-export function sortByRating(payload) {
-    return {
-        type: "SORT_BY_RATING",
-        payload,
-    };
-};
-
-export function resetDetails() {
-    return ({
-        type: 'RESET_DETAILS'
-    })
 }
