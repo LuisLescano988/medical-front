@@ -1,12 +1,12 @@
 import React, { useEffect, useState } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 import SearchBar from '../Components/SearchBar'
-import TableGrid from '../Components/TableGrid'
+import TableGrid from '../Components/Tables/TableGrid'
 import { addPatient, getPatients } from '../Middleware/Actions'
 import AddPatient from '../Components/AddPatient'
 import Swal from 'sweetalert2'
 import Cookies from 'js-cookie'
-import TablePatient from '../Components/TablePatient'
+import TablePatient from '../Components/Tables/TablePatient'
 
 const Patients = () => {
     const elements = useSelector(state => state.patients)

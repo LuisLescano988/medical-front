@@ -6,7 +6,7 @@ import { useSelector } from 'react-redux';
 import Swal from 'sweetalert2';
 import withReactContent from 'sweetalert2-react-content';
 import { useNavigate } from 'react-router-dom';
-import AddMedication from './AddMedication';
+import AddMedication from '../AddMedication';
 
 const TableGrid = ({ elements: initialElements, handleInputUpdate, itemsToSearch, hiddenColumns = [] }) => {
     const navigate = useNavigate()

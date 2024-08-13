@@ -1,12 +1,11 @@
 import React, { useEffect, useState } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 import SearchBar from '../Components/SearchBar'
-import TableGrid from '../Components/TableGrid'
 import { addRecipe, getPatients, getRecipes } from '../Middleware/Actions'
 import AddRecipeComponent from '../Components/AddRecipe'
 import Swal from 'sweetalert2'
 import Cookies from 'js-cookie'
-import TableRecipes from '../Components/TableRecipes'
+import TableRecipes from '../Components/Tables/TableRecipes'
 
 const Recipes = () => {
     const elements = useSelector(state => state.recipes)

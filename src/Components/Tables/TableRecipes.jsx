@@ -1,39 +1,24 @@
 import React, { useEffect, useState } from 'react'
-import { createColumnHelper, flexRender, getCoreRowModel, getFilteredRowModel, getPaginationRowModel, useReactTable } from '@tanstack/react-table'
-import { useDispatch, useSelector } from 'react-redux'
+import { createColumnHelper, flexRender, getCoreRowModel, getFilteredRowModel, getPaginationRowModel, getSortedRowModel, useReactTable } from '@tanstack/react-table'
+import { useSelector } from 'react-redux'
 import { MdOutlineDeleteForever } from "react-icons/md";
 import { FiEdit } from "react-icons/fi";
-import AddPatient from './AddPatient';
+import AddRecipe from '../AddRecipe';
 import Swal from 'sweetalert2';
-import Cookies from 'js-cookie';
-import { addPatient } from '../Middleware/Actions';
+import RecipeAlertDetails from '../Alerts/RecipeAlertDetails';
 
-const TablePatient = ({ itemsToSearch }) => {
-    const dispatch = useDispatch()
-    const patients = useSelector(state => state.patients)
-    const columnHelper = createColumnHelper()
-    const userId = Cookies.get("user_id")
-    const [addPatientForm, setAddPatientForm] = useState({
-        nombre: "",
-        apellido: "",
-        sexo: "",
-        fecha_nacimiento: "",
-        obra_social: "",
-        numero_afiliado: "",
-        dni: "",
-        provincia: "",
-        ciudad: "",
-        medicacion: "",
-        user_id:userId
-    })
-
-    
+const TableRecipes = ({ itemsToSearch }) => {
+    const recipes = useSelector(state => state.recipes);
+    const patients = useSelector(state => state.patients);
+    const columnHelper = createColumnHelper();
+    const [formData, setFormData] = useState({});
+    const [selectedRow, setSelectedRow] = useState(null);
 
     const getPatientNameById = (id) => {
         const patient = patients.find(patient => patient.id === id);
         return patient ? `${patient.nombre} ${patient.apellido}` : id;
     };
-    const keys = patients && patients.length > 0 ? Object.keys(patients[0]).filter(key => key !== 'id') : [];
+    const keys = recipes && recipes.length > 0 ? Object.keys(recipes[0]).filter(key => key !== 'id' && key !== 'user') : [];
 
     const columns = keys.map(key =>
         columnHelper.accessor(key, {
@@ -41,15 +26,22 @@ const TablePatient = ({ itemsToSearch }) => {
                 const value = info.getValue();
                 if (key === 'paciente') {
                     return <span onClick={() => handleCellClick(info)}>{getPatientNameById(info.getValue())}</span>;
+                } else if (key === 'medicacion') {
+                    const concatenatedString = value.map(item => item[Object.keys(item)[0]]).join(', ');
+                    return <span onClick={() => handleCellClick(info)}>{concatenatedString}</span>;
                 }
                 return <span onClick={() => handleCellClick(info)}>{info.getValue()}</span>;
             },
             header: key.replace(/_/g, ' ').charAt(0).toUpperCase() + key.replace(/_/g, ' ').slice(1),
-            meta: { width: 'w-[50px]' }
+            meta: { width: 'w-[50px]' },
+            enableSorting: true,
         })
     )
 
-    const handleCellClick = (cell) => {
+    const handleCellClick = async (cell) => {
+        const row = cell.row.original;
+        setSelectedRow(row);
+
         const value = cell.getValue();
         let content;
         if (cell.column.columnDef.header === 'Paciente') {
@@ -61,41 +53,32 @@ const TablePatient = ({ itemsToSearch }) => {
         else {
             content = value;
         }
-        Swal.fire({
-            title: 'Info',
+
+        const result = await Swal.fire({
+            title: 'Detalle',
             html: `<p>${cell.column.columnDef.header}: ${content}</p>`,
+            showCancelButton: true,
             showConfirmButton: true,
-            showCancelButton:true,
-            confirmButtonText:'Detalle',
-            cancelButtonText:'Cancel'            
-        })
+            confirmButtonText: 'Detalle',
+            cancelButtonText: 'Cerrar',
+        });
+
+        
+        if (result.isConfirmed && row) {
+            await RecipeAlertDetails({ row, getPatientNameById });
+        }
     };
 
-    const handleSubmit = () => {
-        dispatch(addPatient(addPatientForm))
-        .then(() => {
-            setAddPatientForm({})
-            Swal.fire(`Se agregó correctamente`);
-        })
-        .then(() => {
-            location.reload()
-        })
-        .catch(error => {
-            console.error('Error al agregar paciente:', error);
-            Swal.fire('Error al agregar paciente')
-        });
-    }
-
     const handleInputChange = (e, key) => {
-        setAddPatientForm({
-            ...addPatientForm,
+        setFormData({
+            ...formData,
             [key]: e.target.value
         });
-        console.log(addPatientForm)
+        handleInputUpdate(key, e.target.value)
     }
 
     const table = useReactTable({
-        data: patients || [],
+        data: recipes || [],
         columns,
         state: {
             globalFilter: itemsToSearch,
@@ -103,6 +86,7 @@ const TablePatient = ({ itemsToSearch }) => {
         getFilteredRowModel: getFilteredRowModel(),
         getCoreRowModel: getCoreRowModel(),
         getPaginationRowModel: getPaginationRowModel(),
+        getSortedRowModel: getSortedRowModel(),
     })
 
     useEffect(() => {
@@ -111,7 +95,7 @@ const TablePatient = ({ itemsToSearch }) => {
 
 
 
-    if (!patients || patients.length === 0) {
+    if (!recipes || recipes.length === 0) {
         return <div>
             cargue informacion para empezar
         </div>
@@ -123,11 +107,17 @@ const TablePatient = ({ itemsToSearch }) => {
                 <thead className=' bg-teal-900 text-slate-100 border'>
                     {
                         table.getHeaderGroups().map(headerGroup => (
-                            <tr key={headerGroup.id} className='rounded-2xl text-left font-medium max-xl:font-normal max-lg:text-xs font-sans' >
+                            <tr key={headerGroup.id} className=' text-left font-medium max-xl:font-normal max-lg:text-xs font-sans' >
                                 {headerGroup.headers.map(header => (
-                                    <th key={header.id} className='pl-1 first:rounded-tl-2xl '>
-                                        {flexRender(header.column.columnDef.header,
-                                            header.getContext())}
+                                    <th 
+                                    key={header.id} 
+                                    className='pl-1 first:rounded-tl-2xl'onClick={header.column.getToggleSortingHandler()}
+                                    >
+                                        {flexRender(header.column.columnDef.header, header.getContext())}
+                                        {{
+                                            asc: ' 🔼', 
+                                            desc: ' 🔽',
+                                        }[header.column.getIsSorted()] ?? null}
                                     </th>
                                 ))}
                                 <th className=' bg-teal-900'></th>
@@ -136,12 +126,14 @@ const TablePatient = ({ itemsToSearch }) => {
                         ))
                     }
                 </thead>
-                <tbody>
+                <tbody className=''>
                     {table.getRowModel().rows.length
                         ? table.getRowModel().rows.map((row, i) => (
-                            <tr key={row.id} className={`${i % 2 ? 'bg-teal-600 hover:bg-teal-500' : 'hover:bg-teal-500 bg-teal-600'}`}>
-                                {row.getVisibleCells().map(cell => (
-                                    <td className={` border-b-2 max-w-1 whitespace-nowrap overflow-hidden px-1 pr-2 text-slate-100 text-left`}
+                            <tr key={row.id} className={` bg-teal-600 hover:bg-teal-500 `}>
+                                {row.getVisibleCells().map((cell) => (
+                                    <td className={` ${cell.column.id.includes('firma') || cell.column.id.includes('fecha') ? ' w-[11%]' : ''} 
+                                         ${row.index === table.getRowModel().rows.length - 1 ? 'first:rounded-bl-2xl' : ''}
+                                        border-b-2 max-w-1 whitespace-nowrap overflow-hidden px-1 pr-2 text-slate-100 text-left`}
                                         key={cell.id}>
                                         {flexRender(cell.column.columnDef.cell, cell.getContext())}
                                     </td>
@@ -152,37 +144,21 @@ const TablePatient = ({ itemsToSearch }) => {
                         ))
                         : (
                             <tr>
-                                <td colSpan={13} className=' text-slate-100 bg-teal-600'>No hay resultados que coincidan</td>
+                                <td colSpan={12} className=' text-slate-100 bg-teal-600'>No hay resultados que coincidan</td>
                             </tr>
                         )
                     }
                 </tbody>
-                <tfoot>
-                    <tr className='hover:bg-teal-500 bg-teal-600'>
-                        {keys.map((key, index) => (
-                            <td key={index} className=' first:rounded-bl-xl'>
-                                <input
-                                    className={` w-[90%] ${key == 'fecha_nacimiento' ? ' w-[90%]' : ''} cursor-default px-1 bg-white bg-opacity-20 rounded-md text-slate-200 mr-2 appearance-none placeholder:text-opacity-50 placeholder:text-slate-200 outline-none`}
-                                    type={key.includes("fecha") ? "date" : "text"}
-                                    placeholder={`${key.replace(/_/g, ' ').slice(0, 13)}`}
-                                    value={addPatientForm[key] || ''}
-                                    onChange={(e) => handleInputChange(e, key)}
-                                />
-                            </td>
-                        ))}
-                        <td className=''></td>
-                        <td className=''></td>
-                    </tr>
-                </tfoot>
+
             </table>
             <div className=' flex flex-row justify-between w-[91%]'>
-                <div className=" flex flex-row mt-2">
+                <div className=" flex flex-row">
                     <button
                         onClick={() => {
                             table.previousPage();
                         }}
                         hidden={!table.getCanPreviousPage()}
-                        className="max-sm:text-xs p-1 rounded-lg border border-gray-300 px-2 disabled:opacity-30"
+                        className="max-sm:text-xs p-1 border border-gray-300 px-2 disabled:opacity-30"
                     >
                         {"<"}
                     </button>
@@ -191,11 +167,10 @@ const TablePatient = ({ itemsToSearch }) => {
                             table.nextPage();
                         }}
                         hidden={!table.getCanNextPage()}
-                        className="max-sm:text-xs p-1 rounded-lg border border-gray-300 px-2 disabled:opacity-30"
+                        className="max-sm:text-xs p-1 border border-gray-300 px-2 disabled:opacity-30"
                     >
                         {">"}
                     </button>
-
                     <span className="flex max-sm:text-xs items-center gap-1">
                         <div>Pagina</div>
                         <strong>
@@ -216,12 +191,12 @@ const TablePatient = ({ itemsToSearch }) => {
                         />
                     </span>
                 </div>
-                <button className=' flex flex-col items-end ' onClick={handleSubmit}>
-                    <AddPatient />
+                <button className=' flex flex-col items-end '>
+                    <AddRecipe />
                 </button>
             </div>
         </div>
     )
 }
 
-export default TablePatient
+export default TableRecipes
