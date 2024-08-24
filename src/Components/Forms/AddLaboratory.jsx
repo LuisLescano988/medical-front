@@ -4,9 +4,9 @@ import { useEffect, useState } from 'react'
 import { useDispatch } from 'react-redux';
 import Cookies from 'js-cookie';
 import Swal from 'sweetalert2';
-import { addRecipe, getRecipes } from '../Middleware/Actions';
+import { addRecipe, getRecipes } from '../../Middleware/Actions';
 
-const AddRecipeComponent = ({ isOpen, onClose, patientsList }) => {
+const AddLaboratoryComponent = ({ isOpen, onClose, patientsList }) => {
   const userId = Cookies.get("user_id");
   const dispatch = useDispatch()
   const [addRecipeForm, setAddRecipeForm] = useState({
@@ -88,11 +88,6 @@ const AddRecipeComponent = ({ isOpen, onClose, patientsList }) => {
     }
   };
 
-  // useEffect(() => {
-  //   console.log(addRecipeForm)
-  // }, [addRecipeForm])
-
-
   if (!isOpen) return null;
 
   return (
@@ -167,4 +162,4 @@ const AddRecipeComponent = ({ isOpen, onClose, patientsList }) => {
   );
 }
 
-export default AddRecipeComponent
+export default AddLaboratoryComponent

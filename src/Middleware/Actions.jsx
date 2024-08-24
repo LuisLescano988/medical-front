@@ -1,16 +1,17 @@
 import Cookies from 'js-cookie';
 import axiosInstance from '../config/axiosConfig';
 
-const usersUrl = 'http://127.0.0.1:8000/api/users/'
+// const usersUrl = 'http://127.0.0.1:8000/api/users/'
 const registerUrl = 'http://127.0.0.1:8000/api/users/register/'
 const loginUrl = 'http://127.0.0.1:8000/api/users/login/'
 const refreshTokenUrl = 'http://127.0.0.1:8000/api/users/token/refresh/'
 const patientsUrl = 'http://127.0.0.1:8000/api/pacientes/'
 const recipesUrl = 'http://127.0.0.1:8000/api/recetas/'
-const clinicHistoryUrl = 'PendienteGaio'
-const laboratoryUrl = 'PendienteGaio'
-const qrCreateUrl = 'PendienteGaio'
-const qrReadUrl = 'PendienteGaio'
+const laboratoryUrl = 'http://127.0.0.1:8000/api/pedidos_laboratorio/'
+// const LaboratoryUrl = 'PendienteGaio'
+// const laboratoryUrl = 'PendienteGaio'
+// const qrCreateUrl = 'PendienteGaio'
+// const qrReadUrl = 'PendienteGaio'
 
 export function addUser(payload) {
     return function (dispatch) {
@@ -51,10 +52,10 @@ export const refreshAccessToken = () => async (dispatch) => {
     try {
         const refreshToken = Cookies.get('refresh_token');
         if (!refreshToken) throw new Error('No refresh token available');
-        
+
         const response = await axiosInstance.post(refreshTokenUrl, { refresh: refreshToken });
         const { access } = response.data;
-        
+
         Cookies.set('access_token', access, { secure: true, sameSite: 'strict' });
         dispatch({ type: 'LOGIN_SUCCESS' })
     } catch (error) {
@@ -104,6 +105,21 @@ export function getRecipes() {
     }
 }
 
+export function getLaboratory() {
+    return function (dispatch) {
+        axiosInstance.get(laboratoryUrl)
+            .then(json => {
+                return dispatch({
+                    type: 'GET_LABORATORIES',
+                    payload: json.data
+                })
+            })
+            .catch((error) => {
+                console.log(error)
+            })
+    }
+}
+
 export function addPatient(payload) {
     return function (dispatch) {
         return axiosInstance
@@ -130,6 +146,21 @@ export function addRecipe(payload) {
                     payload: patientData
                 });
                 return patientData;
+            });
+    }
+}
+
+export function addLaboratory(payload) {
+    return function (dispatch) {
+        return axiosInstance
+            .post(laboratoryUrl, payload)
+            .then((info) => {
+                const laboratoryData = info.data
+                dispatch({
+                    type: 'ADD_LABORATORY',
+                    payload: laboratoryData
+                });
+                return laboratoryData;
             });
     }
 }

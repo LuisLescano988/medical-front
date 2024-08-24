@@ -1,9 +1,8 @@
-import React, { useEffect, useState } from 'react'
+import { useEffect, useState } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 import SearchBar from '../Components/SearchBar'
-import { addRecipe, getPatients, getRecipes } from '../Middleware/Actions'
+import { getPatients, getRecipes } from '../Middleware/Actions'
 import AddRecipeComponent from '../Components/AddRecipe'
-import Swal from 'sweetalert2'
 import Cookies from 'js-cookie'
 import TableRecipes from '../Components/Tables/TableRecipes'
 
@@ -36,37 +35,15 @@ const Recipes = () => {
         })
     }
 
-    const handleSubmit = () => {
-        dispatch(addRecipe(addRecipeForm))
-            .then(() => {
-                setAddRecipeForm({})
-                Swal.fire(`Se agregó correctamente`);
-            })
-            .then(() => {
-                location.reload()
-            })
-            .catch(error => {
-                console.error('Error al registrar la receta:', error);
-                Swal.fire('Error al registrar la receta')
-            });
-    }
-
     const handleSearchChange = (value) => {
         setSearchValue(value)
     }
 
-    const handleInputUpdate = (key, value) => {
-        setAddRecipeForm({
-            ...addRecipeForm,
-            [key]: value
-        });
-    }
-
     useEffect(() => {
-      dispatch(getRecipes())
-      dispatch(getPatients())
+        dispatch(getRecipes())
+        dispatch(getPatients())
     }, [])
-    
+
 
 
     if (elements.length < 1) {
@@ -86,9 +63,9 @@ const Recipes = () => {
                             onChange={(e) => handleInputChange(e, key)}
                         />
                     ))}
-                    <button className=' flex justify-end pr-[2%] pt-[0.1%] w-full' onClick={handleSubmit}>
+                    <div className=' flex justify-start pr-[2%] pt-[0.1%] w-full' >
                         <AddRecipeComponent />
-                    </button>
+                    </div>
                 </div>
             </div>
         </div>
@@ -102,16 +79,7 @@ const Recipes = () => {
                     <SearchBar onSearchChange={handleSearchChange} searchElement='recetas' />
                 </div>
                 <div className=' flex flex-col items-end'>
-                    {/* <TableGrid
-                        itemsToSearch={searchValue}
-                        elements={elements}
-                        handleInputUpdate={handleInputUpdate}
-                        hiddenColumns={['user']}
-                    />
-                    <button className=' flex justify-end pr-[2%] pt-[0.1%] w-fit' onClick={handleSubmit}>
-                        <AddRecipeComponent />
-                    </button> */}
-                    <TableRecipes itemsToSearch={searchValue}/>
+                    <TableRecipes itemsToSearch={searchValue} />
                 </div>
             </div>
         </div>

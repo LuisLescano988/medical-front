@@ -4,13 +4,13 @@ import { createColumnHelper, flexRender, getCoreRowModel, getFilteredRowModel, g
 import { useSelector } from 'react-redux'
 import { MdOutlineDeleteForever } from "react-icons/md";
 import { FiEdit } from "react-icons/fi";
-import AddRecipe from '../AddRecipe';
 import Swal from 'sweetalert2';
-import RecipeAlertDetails from '../Alerts/RecipeAlertDetails';
 import { RiStickyNoteAddLine } from 'react-icons/ri';
+import LaboratoryAlertDetails from '../Alerts/LaboratoryAlertDetails';
+import AddLaboratoryComponent from '../Forms/AddLaboratory';
 
-const TableRecipes = ({ itemsToSearch }) => {
-    const recipes = useSelector(state => state.recipes);
+const TableLaboratory = ({ itemsToSearch }) => {
+    const laboratories = useSelector(state => state.laboratories);
     const patients = useSelector(state => state.patients);
     const columnHelper = createColumnHelper();
     // eslint-disable-next-line no-unused-vars
@@ -18,23 +18,19 @@ const TableRecipes = ({ itemsToSearch }) => {
     const [isModalOpen, setIsModalOpen] = useState(false);
     const handleOpenModal = () => setIsModalOpen(true);
     const handleCloseModal = () => setIsModalOpen(false);
-
-
+    
+    
     const getPatientNameById = (id) => {
         const patient = patients.find(patient => patient.id === id);
         return patient ? `${patient.nombre} ${patient.apellido}` : id;
     };
-    const keys = recipes && recipes.length > 0 ? Object.keys(recipes[0]).filter(key => key !== 'id' && key !== 'user') : [];
-
+    const keys = laboratories && laboratories.length > 0 ? Object.keys(laboratories[0]).filter(key => key !== 'id' && key !== 'user') : [];
+    
     const columns = keys.map(key =>
         columnHelper.accessor(key, {
             cell: (info) => {
-                const value = info.getValue();
                 if (key === 'paciente') {
                     return <span onClick={() => handleCellClick(info)}>{getPatientNameById(info.getValue())}</span>;
-                } else if (key === 'receta_medicaciones') {
-                    const concatenatedString = value.map(item => item.medicacion.droga).join(', ');
-                    return <span onClick={() => handleCellClick(info)}>{concatenatedString}</span>;
                 }
                 return <span onClick={() => handleCellClick(info)}>{info.getValue()}</span>;
             },
@@ -52,9 +48,6 @@ const TableRecipes = ({ itemsToSearch }) => {
         if (cell.column.columnDef.header === 'Paciente') {
             content = getPatientNameById(value)
         }
-        else if (Array.isArray(value)) {
-            content = value.map(item => item.medicacion.droga).join(', ');
-        }
         else {
             content = value;
         }
@@ -69,12 +62,12 @@ const TableRecipes = ({ itemsToSearch }) => {
 
 
         if (result.isConfirmed && row) {
-            await RecipeAlertDetails({ row, getPatientNameById });
+            await LaboratoryAlertDetails({ row, getPatientNameById });
         }
     };
 
     const table = useReactTable({
-        data: recipes || [],
+        data: laboratories || [],
         columns,
         state: {
             globalFilter: itemsToSearch,
@@ -90,9 +83,9 @@ const TableRecipes = ({ itemsToSearch }) => {
 
 
 
-    if (!recipes || recipes.length === 0) {
+    if (!laboratories || laboratories.length === 0) {
         return <div>
-            cargue informacion para empezar
+            cargue informacion
         </div>
     }
 
@@ -121,7 +114,7 @@ const TableRecipes = ({ itemsToSearch }) => {
                         ? table.getRowModel().rows.map((row) => (
                             <tr key={row.id} className={` bg-teal-600 hover:bg-teal-500 `}>
                                 {row.getVisibleCells().map((cell) => (
-                                    <td className={` ${cell.column.id.includes('firma') || cell.column.id.includes('fecha') ? ' w-[11%]' : ''} 
+                                    <td className={` ${cell.column.id.includes('firma') || cell.column.id.includes('paciente') || cell.column.id.includes('fecha') || cell.column.id.includes('codigo') ? ' w-[11%]' : ''} 
                                         border-b-2 max-w-1 transition-colors duration-500 hover:text-slate-700 whitespace-nowrap overflow-hidden px-1 pr-2 text-slate-100 text-left`}
                                         key={cell.id}>
                                         {flexRender(cell.column.columnDef.cell, cell.getContext())}
@@ -186,11 +179,11 @@ const TableRecipes = ({ itemsToSearch }) => {
                         <h5>Agregar</h5>
                         <RiStickyNoteAddLine className=' w-12 h-6' />
                     </div>
-                    <AddRecipe isOpen={isModalOpen} onClose={handleCloseModal} patientsList={patients} />
+                    <AddLaboratoryComponent isOpen={isModalOpen} onClose={handleCloseModal} patientsList={patients} />
                 </div>
             </div>
         </div>
     )
 }
 
-export default TableRecipes
+export default TableLaboratory

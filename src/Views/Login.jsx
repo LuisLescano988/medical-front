@@ -1,3 +1,4 @@
+/* eslint-disable no-unused-vars */
 import React, { useState } from 'react'
 import Register from '../Components/Register'
 import Login from '../Components/Login'

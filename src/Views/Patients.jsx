@@ -1,10 +1,7 @@
-import React, { useEffect, useState } from 'react'
+import  { useEffect, useState } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 import SearchBar from '../Components/SearchBar'
-import TableGrid from '../Components/Tables/TableGrid'
-import { addPatient, getPatients } from '../Middleware/Actions'
-import AddPatient from '../Components/AddPatient'
-import Swal from 'sweetalert2'
+import { getPatients } from '../Middleware/Actions'
 import Cookies from 'js-cookie'
 import TablePatient from '../Components/Tables/TablePatient'
 
@@ -35,30 +32,8 @@ const Patients = () => {
         })
     }
 
-    const handleSubmit = () => {
-        dispatch(addPatient(addPatientForm))
-            .then(() => {
-                setAddPatientForm({})
-                Swal.fire(`Se agregó correctamente`);
-            })
-            .then(() => {
-                location.reload()
-            })
-            .catch(error => {
-                console.error('Error al agregar paciente:', error);
-                Swal.fire('Error al agregar paciente')
-            });
-    }
-
     const handleSearchChange = (value) => {
         setSearchValue(value)
-    }
-
-    const handleInputUpdate = (key, value) => {
-        setAddPatientForm({
-            ...addPatientForm,
-            [key]: value
-        });
     }
 
     useEffect(() => {

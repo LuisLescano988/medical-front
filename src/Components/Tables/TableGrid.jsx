@@ -1,10 +1,11 @@
-import React, { useEffect, useState } from 'react'
+/* eslint-disable react/prop-types */
+/* eslint-disable react-hooks/exhaustive-deps */
+import { useEffect, useState } from 'react'
 import { createColumnHelper, flexRender, getCoreRowModel, getFilteredRowModel, getPaginationRowModel, useReactTable } from '@tanstack/react-table'
 import { MdOutlineDeleteForever } from "react-icons/md";
 import { FiEdit } from "react-icons/fi";
 import { useSelector } from 'react-redux';
 import Swal from 'sweetalert2';
-import withReactContent from 'sweetalert2-react-content';
 import { useNavigate } from 'react-router-dom';
 import AddMedication from '../AddMedication';
 
@@ -82,7 +83,6 @@ const TableGrid = ({ elements: initialElements, handleInputUpdate, itemsToSearch
             confirmButtonText: 'Guardar',
             cancelButtonText: 'Cancelar',
             preConfirm: () => {
-                // Lógica para manejar la validación y guardar los datos
                 console.log('Form Data:', formData);
             }
         });

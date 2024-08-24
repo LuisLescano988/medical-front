@@ -1,3 +1,4 @@
+/* eslint-disable no-unused-vars */
 import React from 'react'
 import { Link } from 'react-router-dom'
 
@@ -15,10 +16,7 @@ const Home = () => {
                     <div className=' hover:shadow-2xl hover:shadow-violet-400 transition-all duration-300'>
                         <Link to="/history" className=" text-slate-300 hover:text-white font-semibold cursor-default hover:shadow-2xl hover:border-opacity-80  transition-all duration-200 shadow-black-900 justify-center items-center flex text-xl bg-teal-900 p-2 rounded-md max-sm:w-24 max-md:text-base lg:h-44 h-28 lg:w-56 w-28 flex-col">
                             <div>
-                                Historias
-                            </div>
-                            <div>
-                                Clinicas
+                                Laboratorio
                             </div>
                         </Link>
                     </div>

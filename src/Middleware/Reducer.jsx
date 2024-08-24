@@ -4,7 +4,8 @@ const initialState = {
     isAuthenticated: !!Cookies.get('access_token'),
     recipes: [],
     details: [],
-    patients: []
+    patients: [],
+    laboratories: []
 }
 
 export default function rootReducer(state = initialState, { type, payload }) {
@@ -14,12 +15,18 @@ export default function rootReducer(state = initialState, { type, payload }) {
 
         case 'LOGOUT':
             return { ...state, isAuthenticated: false };
-            
+
         case 'GET_PATIENTS':
             return {
                 ...state,
                 patients: payload,
                 // patients2: payload
+            };
+        case 'GET_LABORATORIES':
+            return {
+                ...state,
+                laboratories: payload,
+                // labs2: payload
             };
 
         case 'GET_RECIPES':

@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react'
+import { useState } from 'react'
 import { useDispatch } from 'react-redux'
 import { addUser } from '../Middleware/Actions'
 import Swal from 'sweetalert2'

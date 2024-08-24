@@ -1,12 +1,14 @@
-import React, { useEffect, useState } from 'react'
+/* eslint-disable react/prop-types */
+import { useEffect, useState } from 'react'
 import { createColumnHelper, flexRender, getCoreRowModel, getFilteredRowModel, getPaginationRowModel, useReactTable } from '@tanstack/react-table'
 import { useDispatch, useSelector } from 'react-redux'
 import { MdOutlineDeleteForever } from "react-icons/md";
 import { FiEdit } from "react-icons/fi";
-import AddPatient from '../AddPatient';
+import AddPatient from '../Forms/AddPatient';
 import Swal from 'sweetalert2';
 import Cookies from 'js-cookie';
 import { addPatient } from '../../Middleware/Actions';
+import PatientAlertDetails from '../Alerts/PatientAlertDetails';
 
 const TablePatient = ({ itemsToSearch }) => {
     const dispatch = useDispatch()
@@ -38,6 +40,7 @@ const TablePatient = ({ itemsToSearch }) => {
     const columns = keys.map(key =>
         columnHelper.accessor(key, {
             cell: (info) => {
+                // eslint-disable-next-line no-unused-vars
                 const value = info.getValue();
                 if (key === 'paciente') {
                     return <span onClick={() => handleCellClick(info)}>{getPatientNameById(info.getValue())}</span>;
@@ -49,7 +52,8 @@ const TablePatient = ({ itemsToSearch }) => {
         })
     )
 
-    const handleCellClick = (cell) => {
+    const handleCellClick = async(cell) => {
+        const row = cell.row.original;
         const value = cell.getValue();
         let content;
         if (cell.column.columnDef.header === 'Paciente') {
@@ -61,14 +65,17 @@ const TablePatient = ({ itemsToSearch }) => {
         else {
             content = value;
         }
-        Swal.fire({
+        const result = await Swal.fire({
             title: 'Info',
             html: `<p>${cell.column.columnDef.header}: ${content}</p>`,
             showConfirmButton: true,
             showCancelButton:true,
             confirmButtonText:'Detalle',
             cancelButtonText:'Cancel'            
-        })
+        });
+        if(result.isConfirmed && row){
+            await PatientAlertDetails({row, getPatientNameById})
+        }
     };
 
     const handleSubmit = () => {
@@ -141,13 +148,13 @@ const TablePatient = ({ itemsToSearch }) => {
                         ? table.getRowModel().rows.map((row, i) => (
                             <tr key={row.id} className={`${i % 2 ? 'bg-teal-600 hover:bg-teal-500' : 'hover:bg-teal-500 bg-teal-600'}`}>
                                 {row.getVisibleCells().map(cell => (
-                                    <td className={` border-b-2 max-w-1 whitespace-nowrap overflow-hidden px-1 pr-2 text-slate-100 text-left`}
+                                    <td className={` border-b max-w-1 whitespace-nowrap overflow-hidden px-1 pr-2 text-slate-100 text-left`}
                                         key={cell.id}>
                                         {flexRender(cell.column.columnDef.cell, cell.getContext())}
                                     </td>
                                 ))}
-                                <td className=' border-b-2 w-4 text-slate-100 size-7'><FiEdit /></td>
-                                <td className=' border-b-2 w-4 text-slate-100 size-7'><MdOutlineDeleteForever /></td>
+                                <td className=' border-b w-4 text-slate-100 size-7'><FiEdit /></td>
+                                <td className=' border-b w-4 text-slate-100 size-7'><MdOutlineDeleteForever /></td>
                             </tr>
                         ))
                         : (
@@ -160,7 +167,7 @@ const TablePatient = ({ itemsToSearch }) => {
                 <tfoot>
                     <tr className='hover:bg-teal-500 bg-teal-600'>
                         {keys.map((key, index) => (
-                            <td key={index} className=' first:rounded-bl-xl'>
+                            <td key={index} className=' first:rounded-bl-md py-[0.18%] '>
                                 <input
                                     className={` w-[90%] ${key == 'fecha_nacimiento' ? ' w-[90%]' : ''} cursor-default px-1 bg-white bg-opacity-20 rounded-md text-slate-200 mr-2 appearance-none placeholder:text-opacity-50 placeholder:text-slate-200 outline-none`}
                                     type={key.includes("fecha") ? "date" : "text"}
