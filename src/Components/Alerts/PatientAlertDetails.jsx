@@ -18,7 +18,7 @@ const PatientAlertDetails = async ({ row }) => {
         showCancelButton: true,
         cancelButtonText: 'Cerrar',
         confirmButtonText: 'Imprimir'
-    },console.log(numero_afiliado));
+    });
 
 };
 

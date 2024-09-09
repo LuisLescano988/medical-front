@@ -70,7 +70,7 @@ const Register = () => {
                     </div>
                     <div>
                         <input className=' p-1 rounded-md border border-slate-400 w-full' 
-                        type="text" placeholder='Contraseña' onChange={(e) => handleInputChange(e, 'password')}/>
+                        type="password" placeholder='Contraseña' onChange={(e) => handleInputChange(e, 'password')}/>
                     </div>
                     <div className='flex flex-row w-full justify-evenly'>
                         <div className=' flex flex-col'>

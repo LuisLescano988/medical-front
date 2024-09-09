@@ -92,7 +92,7 @@ const TableLaboratory = ({ itemsToSearch }) => {
     return (
         <div className=' flex flex-col items-end w-full pr-[2%]'>
             <table className=' w-[91%]'>
-                <thead className=' bg-teal-900 text-slate-100 border'>
+                <thead className=' bg-teal-900 text-slate-100 border border-b-violet-300'>
                     {
                         table.getHeaderGroups().map(headerGroup => (
                             <tr key={headerGroup.id} className=' text-left font-medium max-xl:font-normal max-lg:text-xs font-sans' >
@@ -115,13 +115,13 @@ const TableLaboratory = ({ itemsToSearch }) => {
                             <tr key={row.id} className={` bg-teal-600 hover:bg-teal-500 `}>
                                 {row.getVisibleCells().map((cell) => (
                                     <td className={` ${cell.column.id.includes('firma') || cell.column.id.includes('paciente') || cell.column.id.includes('fecha') || cell.column.id.includes('codigo') ? ' w-[11%]' : ''} 
-                                        border-b-2 max-w-1 transition-colors duration-500 hover:text-slate-700 whitespace-nowrap overflow-hidden px-1 pr-2 text-slate-100 text-left`}
+                                        border-b-2 border-purple-300 max-w-1 transition-colors duration-500 hover:text-slate-700 whitespace-nowrap overflow-hidden px-1 pr-2 text-slate-100 text-left`}
                                         key={cell.id}>
                                         {flexRender(cell.column.columnDef.cell, cell.getContext())}
                                     </td>
                                 ))}
-                                <td className=' border-b-2 w-4 text-slate-100 transition-colors duration-300 hover:text-slate-600 size-7'><FiEdit /></td>
-                                <td className=' border-b-2 w-4 text-slate-100 transition-colors duration-300 hover:text-slate-600 size-7'><MdOutlineDeleteForever /></td>
+                                <td className=' border-b-2 border-violet-300 w-4 text-slate-100 transition-colors duration-300 hover:text-slate-600 size-7'><FiEdit /></td>
+                                <td className=' border-b-2 border-violet-300 w-4 text-slate-100 transition-colors duration-300 hover:text-slate-600 size-7'><MdOutlineDeleteForever /></td>
                             </tr>
                         ))
                         : (

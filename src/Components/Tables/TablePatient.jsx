@@ -167,7 +167,7 @@ const TablePatient = ({ itemsToSearch }) => {
                 <tfoot>
                     <tr className='hover:bg-teal-500 bg-teal-600'>
                         {keys.map((key, index) => (
-                            <td key={index} className=' first:rounded-bl-md py-[0.18%] '>
+                            <td key={index} className=' py-[0.18%] '>
                                 <input
                                     className={` w-[90%] ${key == 'fecha_nacimiento' ? ' w-[90%]' : ''} cursor-default px-1 bg-white bg-opacity-20 rounded-md text-slate-200 mr-2 appearance-none placeholder:text-opacity-50 placeholder:text-slate-200 outline-none`}
                                     type={key.includes("fecha") ? "date" : "text"}

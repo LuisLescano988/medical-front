@@ -1,6 +1,5 @@
-import React, { useState } from 'react'
+import { useState } from 'react'
 import { useDispatch } from 'react-redux'
-import { Link } from 'react-router-dom'
 import { loginUser } from '../Middleware/Actions'
 import Swal from 'sweetalert2'
 
@@ -54,7 +53,7 @@ const Login = () => {
                         </div>
                         <div>
                             <input className=' p-1 rounded-md border border-slate-400 w-full' 
-                            type="text" 
+                            type="password" 
                             placeholder='Contraseña' 
                             onChange={(e) => handleInputChange(e, 'password')}
                             value={userLogin.password}/>

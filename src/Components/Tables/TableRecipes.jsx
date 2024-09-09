@@ -4,7 +4,7 @@ import { createColumnHelper, flexRender, getCoreRowModel, getFilteredRowModel, g
 import { useSelector } from 'react-redux'
 import { MdOutlineDeleteForever } from "react-icons/md";
 import { FiEdit } from "react-icons/fi";
-import AddRecipe from '../AddRecipe';
+import AddRecipe from '../Forms/AddRecipe';
 import Swal from 'sweetalert2';
 import RecipeAlertDetails from '../Alerts/RecipeAlertDetails';
 import { RiStickyNoteAddLine } from 'react-icons/ri';
@@ -121,7 +121,7 @@ const TableRecipes = ({ itemsToSearch }) => {
                         ? table.getRowModel().rows.map((row) => (
                             <tr key={row.id} className={` bg-teal-600 hover:bg-teal-500 `}>
                                 {row.getVisibleCells().map((cell) => (
-                                    <td className={` ${cell.column.id.includes('firma') || cell.column.id.includes('fecha') ? ' w-[11%]' : ''} 
+                                    <td className={` ${cell.column.id.includes('codigo') || cell.column.id.includes('firma') || cell.column.id.includes('fecha') ? ' w-[11%]' : ''} 
                                         border-b-2 max-w-1 transition-colors duration-500 hover:text-slate-700 whitespace-nowrap overflow-hidden px-1 pr-2 text-slate-100 text-left`}
                                         key={cell.id}>
                                         {flexRender(cell.column.columnDef.cell, cell.getContext())}

@@ -4,7 +4,7 @@ import { useEffect, useState } from 'react'
 import { useDispatch } from 'react-redux';
 import Cookies from 'js-cookie';
 import Swal from 'sweetalert2';
-import { addRecipe, getRecipes } from '../Middleware/Actions';
+import { addRecipe, getRecipes } from '../../Middleware/Actions';
 
 const AddRecipeComponent = ({ isOpen, onClose, patientsList }) => {
   const userId = Cookies.get("user_id");
@@ -12,11 +12,13 @@ const AddRecipeComponent = ({ isOpen, onClose, patientsList }) => {
   const [addRecipeForm, setAddRecipeForm] = useState({
     paciente: "",
     user: userId,
-    medicacion: [{
-      droga: "",
+    receta_medicaciones: [{
+      medicacion: {
+        droga: "",
+        presentacion: "",
+        marca_recomendada: "",
+      },
       dosis: "",
-      presentacion: "",
-      marca_recomendada: "",
       cantidad_unidades: ""
     }],
     firma_medica: "",
@@ -25,13 +27,19 @@ const AddRecipeComponent = ({ isOpen, onClose, patientsList }) => {
     observaciones: "",
   });
 
-  const handleChange = (e, key, index) => {
+  const handleChange = (e, key, index = null) => {
     const { name, value } = e.target;
 
-    if (key.startsWith('medicacion')) {
-      const medicacionCopy = [...addRecipeForm.medicacion];
-      medicacionCopy[index][name] = value;
-      setAddRecipeForm({ ...addRecipeForm, medicacion: medicacionCopy });
+    if (key === 'receta_medicaciones') {
+      const medicacionCopy = [...addRecipeForm.receta_medicaciones];
+      if (index !== null) {
+        if (['droga', 'presentacion', 'marca_recomendada'].includes(name)) {
+          medicacionCopy[index].medicacion[name] = value;
+        } else {
+          medicacionCopy[index][name] = value;
+        }
+      }
+      setAddRecipeForm({ ...addRecipeForm, receta_medicaciones: medicacionCopy });
     } else {
       setAddRecipeForm({ ...addRecipeForm, [key]: value });
     }
@@ -40,20 +48,25 @@ const AddRecipeComponent = ({ isOpen, onClose, patientsList }) => {
   const handleAddMedication = () => {
     setAddRecipeForm({
       ...addRecipeForm,
-      medicacion: [...addRecipeForm.medicacion, {
-        droga: "",
-        dosis: "",
-        presentacion: "",
-        marca_recomendada: "",
-        cantidad_unidades: ""
-      }]
+      receta_medicaciones: [
+        ...addRecipeForm.receta_medicaciones,
+        {
+          medicacion: {
+            droga: '',
+            presentacion: '',
+            marca_recomendada: '',
+          },
+          dosis: '',
+          cantidad_unidades: '',
+        },
+      ],
     });
   };
 
   const handleRemoveLastMedication = () => {
     setAddRecipeForm(prevState => ({
       ...prevState,
-      medicacion: prevState.medicacion.slice(0, -1)
+      receta_medicaciones: prevState.receta_medicaciones.slice(0, -1)
     }));
   };
 
@@ -72,13 +85,17 @@ const AddRecipeComponent = ({ isOpen, onClose, patientsList }) => {
       setAddRecipeForm({
         paciente: "",
         user: userId,
-        medicacion: [{
-          droga: "",
-          dosis: "",
-          presentacion: "",
-          marca_recomendada: "",
-          cantidad_unidades: ""
-        }],
+        receta_medicaciones: [
+          {
+            medicacion: {
+              droga: "",
+              presentacion: "",
+              marca_recomendada: "",
+            },
+            dosis: "",
+            cantidad_unidades: ""
+          }
+        ],
         firma_medica: "",
         fecha_ultimo_laboratorio: "",
         proxima_fecha_empadronamiento: "",
@@ -98,9 +115,9 @@ const AddRecipeComponent = ({ isOpen, onClose, patientsList }) => {
   return (
     <div className=" fixed inset-0 bg-black bg-opacity-50 flex flex-col items-center p-4">
       <div className="bg-white rounded-lg shadow-lg p-6 w-[90%] max-w-xl ">
-      <h4 className="text-xl font-semibold mb-4 text-center">Crear receta</h4>
+        <h4 className="text-xl font-semibold mb-4 text-center">Crear receta</h4>
         <form className=' flex flex-col'>
-          <select name="paciente" id="paciente" defaultValue="" onChange={(e) => handleChange(e, 'paciente')}
+          <select name="paciente" id="paciente" onChange={(e) => handleChange(e, 'paciente')}
             className="border mb-1 rounded">
             <option value="" disabled >Seleccione un paciente</option>
             <option value="/patients">Agregar paciente nuevo</option>
@@ -128,29 +145,29 @@ const AddRecipeComponent = ({ isOpen, onClose, patientsList }) => {
           <textarea name="observaciones" placeholder="Observaciones" value={addRecipeForm.observaciones}
             onChange={(e) => handleChange(e, 'observaciones')}
             className="border mb-1 px-1 rounded" />
-          {addRecipeForm.medicacion.map((med, index) => (
+          {addRecipeForm.receta_medicaciones.map((med, index) => (
             <div key={index} className="space-y-1">
-              <input type="text" name="droga" placeholder="Droga" value={med.droga}
-                onChange={(e) => handleChange(e, `medicacion-${index}`, index)}
+              <input type="text" name="droga" placeholder="Droga" value={med.medicacion.droga}
+                onChange={(e) => handleChange(e, 'receta_medicaciones', index)}
                 className="border pb-1 px-1 rounded" />
-              <input type="text" name="presentacion" placeholder="Presentación" value={med.presentacion}
-                onChange={(e) => handleChange(e, `medicacion-${index}`, index)}
+              <input type="text" name="presentacion" placeholder="Presentación" value={med.medicacion.presentacion}
+                onChange={(e) => handleChange(e, 'receta_medicaciones', index)}
                 className="border pb-1 px-1 rounded" />
               <input type="text" name="dosis" placeholder="Dosis" value={med.dosis}
-                onChange={(e) => handleChange(e, `medicacion-${index}`, index)}
+                onChange={(e) => handleChange(e, 'receta_medicaciones', index)}
                 className="border pb-1 px-1 rounded" />
-              <input type="text" name="marca_recomendada" placeholder="Marca recomendada" value={med.marca_recomendada}
-                onChange={(e) => handleChange(e, `medicacion-${index}`, index)}
+              <input type="text" name="marca_recomendada" placeholder="Marca recomendada" value={med.medicacion.marca_recomendada}
+                onChange={(e) => handleChange(e, 'receta_medicaciones', index)}
                 className="border pb-1 px-1 rounded" />
               <input type="number" name="cantidad_unidades" placeholder="Cantidad unidades" value={med.cantidad_unidades}
-                onChange={(e) => handleChange(e, `medicacion-${index}`, index)}
+                onChange={(e) => handleChange(e, 'receta_medicaciones', index)}
                 className="border pb-1 px-1 rounded" />
             </div>
           ))}
           <span onClick={handleAddMedication} className="bg-blue-500 text-white py-1 my-2 px-4 rounded">
             Añadir Medicación
           </span>
-          <span onClick={handleRemoveLastMedication} disabled={addRecipeForm.medicacion.length === 1} className="bg-red-500 text-white py-1 mb-2 px-4 rounded">
+          <span onClick={handleRemoveLastMedication} disabled={addRecipeForm.receta_medicaciones.length === 1} className="bg-red-500 text-white py-1 mb-2 px-4 rounded">
             Quitar Última
           </span>
           <div className="flex justify-around">

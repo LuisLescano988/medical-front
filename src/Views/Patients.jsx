@@ -1,4 +1,4 @@
-import  { useEffect, useState } from 'react'
+import { useEffect, useState } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 import SearchBar from '../Components/SearchBar'
 import { getPatients } from '../Middleware/Actions'
@@ -44,7 +44,7 @@ const Patients = () => {
     if (elements.length < 1) {
         return <div id='pacientes' className='flex flex-col items-end w-full'>
             <div className=' flex flex-col w-11/12'>
-                <div className=' flex justify-around'>
+                <div className=''>
                     <SearchBar onSearchChange={handleSearchChange} searchElement='pacientes' />
                 </div>
                 <div className=' mt-[2%]'>

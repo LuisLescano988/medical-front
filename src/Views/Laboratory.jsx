@@ -2,8 +2,8 @@
 import { useEffect, useState } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 import SearchBar from '../Components/SearchBar'
-import { getLaboratory, getPatients, getRecipes } from '../Middleware/Actions'
-import AddRecipeComponent from '../Components/AddRecipe'
+import { getLaboratory, getPatients } from '../Middleware/Actions'
+import AddRecipeComponent from '../Components/Forms/AddRecipe'
 import Cookies from 'js-cookie'
 import TableLaboratory from '../Components/Tables/TableLaboratory'
 
@@ -48,10 +48,10 @@ const Laboratory = () => {
 
 
   if (elements.length < 1) {
-      return <div id='pacientes' className='flex flex-col items-end w-full'>
+      return <div className='flex flex-col items-end w-full'>
           <div className=' flex flex-col w-11/12'>
               <div className=' flex justify-around'>
-                  <SearchBar onSearchChange={handleSearchChange} searchElement='recetas' />
+                  <SearchBar onSearchChange={handleSearchChange} searchElement='pedidos de laboratorio' />
               </div>
               <div className=' mt-[2%]'>
                   {Object.keys(addLabForm).map((key, index) => (
@@ -77,7 +77,7 @@ const Laboratory = () => {
       <div id='recetas' className='flex flex-col '>
           <div className=' flex flex-col'>
               <div className=' flex justify-around'>
-                  <SearchBar onSearchChange={handleSearchChange} searchElement='recetas' />
+                  <SearchBar onSearchChange={handleSearchChange} searchElement='pedidos de laboratorio' />
               </div>
               <div className=' flex flex-col items-end'>
                   <TableLaboratory itemsToSearch={searchValue} />

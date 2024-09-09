@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 import SearchBar from '../Components/SearchBar'
 import { getPatients, getRecipes } from '../Middleware/Actions'
-import AddRecipeComponent from '../Components/AddRecipe'
+import AddRecipeComponent from '../Components/Forms/AddRecipe'
 import Cookies from 'js-cookie'
 import TableRecipes from '../Components/Tables/TableRecipes'
 

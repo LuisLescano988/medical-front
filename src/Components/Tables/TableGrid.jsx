@@ -59,12 +59,12 @@ const TableGrid = ({ elements: initialElements, handleInputUpdate, itemsToSearch
             showConfirmButton: true,
             confirmButtonText: 'Editar',
             cancelButtonText: 'Borrar',
-            preConfirm: () => {
-                console.log('Editar', cell);
-            },
-            preCancel: () => {
-                console.log('Borrar', cell);
-            }
+            // preConfirm: () => {
+            //     console.log('Editar', cell);
+            // },
+            // preCancel: () => {
+            //     console.log('Borrar', cell);
+            // }
         }).then((result) => {
             if (result.isConfirmed) {
                 console.log('Confirmado editar');
