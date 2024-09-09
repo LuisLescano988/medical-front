@@ -12,7 +12,6 @@ const laboratoryUrl = `${apiBaseUrl}pedidos_laboratorio/`
 
 export function addUser(payload) {
     return function (dispatch) {
-        console.log(registerUrl)
         return axiosInstance
             .post(registerUrl, payload)
             .then((info) => {
