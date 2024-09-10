@@ -3,12 +3,12 @@ import axiosInstance from '../config/axiosConfig';
 
 
 const apiBaseUrl = import.meta.env.VITE_API_BASE_URL;
-const registerUrl = `${apiBaseUrl}users/register/`
-const loginUrl = `${apiBaseUrl}users/login/`
-const refreshTokenUrl = `${apiBaseUrl}users/token/refresh/`
-const patientsUrl = `${apiBaseUrl}pacientes/`
-const recipesUrl = `${apiBaseUrl}recetas/`
-const laboratoryUrl = `${apiBaseUrl}pedidos_laboratorio/`
+const registerUrl = `${apiBaseUrl}/users/register/`
+const loginUrl = `${apiBaseUrl}/users/login/`
+const refreshTokenUrl = `${apiBaseUrl}/users/token/refresh/`
+const patientsUrl = `${apiBaseUrl}/pacientes/`
+const recipesUrl = `${apiBaseUrl}/recetas/`
+const laboratoryUrl = `${apiBaseUrl}/pedidos_laboratorio/`
 
 export function addUser(payload) {
     return function (dispatch) {
