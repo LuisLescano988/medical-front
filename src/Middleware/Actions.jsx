@@ -73,7 +73,7 @@ export function getPatients(user_id) {
     return function (dispatch) {
         axiosInstance.get(patientsUrl, {
             params: {
-                user_id: user_id
+                id: user_id
             }
         })
             .then(json => {
@@ -88,10 +88,12 @@ export function getPatients(user_id) {
     }
 }
 
-export function getRecipes() {
+export function getRecipes(user) {
     return function (dispatch) {
-        axiosInstance.get(recipesUrl)
-            .then(json => {
+        axiosInstance.get(recipesUrl, {
+            params: {
+                user:user}})
+        .then(json => {
                 return dispatch({
                     type: 'GET_RECIPES',
                     payload: json.data

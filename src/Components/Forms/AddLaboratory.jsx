@@ -68,7 +68,7 @@ const AddLaboratoryComponent = ({ isOpen, onClose, patientsList }) => {
     });
     if (result.isConfirmed) {
       await dispatch(addRecipe(addRecipeForm));
-      await dispatch(getRecipes());
+      await dispatch(getRecipes(userId));
       setAddRecipeForm({
         paciente: "",
         user: userId,

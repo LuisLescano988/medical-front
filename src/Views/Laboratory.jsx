@@ -41,8 +41,8 @@ const Laboratory = () => {
   }
 
   useEffect(() => {
-      dispatch(getLaboratory())
-      dispatch(getPatients())
+      dispatch(getLaboratory(userId))
+      dispatch(getPatients(userId))
   }, [])
 
 

@@ -112,6 +112,41 @@ const TablePatient = ({ itemsToSearch }) => {
         getPaginationRowModel: getPaginationRowModel(),
     })
 
+    const calculateAge = (fechaNacimiento) => {
+        const today = new Date();
+        const birthDate = new Date(fechaNacimiento);
+        let age = today.getFullYear() - birthDate.getFullYear();
+        const monthDiff = today.getMonth() - birthDate.getMonth();
+
+        if (monthDiff < 0 || (monthDiff === 0 && today.getDate() < birthDate.getDate())) {
+            age--;
+        }
+        return age;
+    };
+
+    const handleFechaNacimientoBlur = (e) => {
+        const value = e.target.value;
+
+        const age = calculateAge(value);
+        const today = new Date();
+        console.log(age)
+        const birthDate = new Date(value);
+
+        if (birthDate > today) {
+            Swal.fire('La fecha de nacimiento no puede ser futura.');
+            return;
+        }
+        if (age > 125) {
+            Swal.fire('La edad calculada es mayor a 125 años, ingrese una fecha válida.');
+            return;
+        }
+
+        setAddPatientForm({
+            ...addPatientForm,
+            edad: age
+        });
+    };
+
     useEffect(() => {
         table.setPageSize(15)
     }, []);
@@ -174,6 +209,8 @@ const TablePatient = ({ itemsToSearch }) => {
                                     placeholder={`${key.replace(/_/g, ' ').slice(0, 13)}`}
                                     value={addPatientForm[key] || ''}
                                     onChange={(e) => handleInputChange(e, key)}
+                                    onBlur={key === 'fecha_nacimiento' ? handleFechaNacimientoBlur : null}
+                                    readOnly={key === 'edad'}                                   
                                 />
                             </td>
                         ))}

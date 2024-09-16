@@ -1,4 +1,3 @@
-import React from 'react'
 import { IoPersonAddOutline } from "react-icons/io5";
 
 const AddPatient = () => {
